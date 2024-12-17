@@ -2,15 +2,33 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+// const geistSans = localFont({
+//   src: "./fonts/GeistVF.woff",
+//   variable: "--font-geist-sans",
+//   weight: "100 900",
+// });
+// const geistMono = localFont({
+//   src: "./fonts/GeistMonoVF.woff",
+//   variable: "--font-geist-mono",
+//   weight: "100 900",
+// });
+
+const interRegular = localFont({
+  src: "./fonts/Inter_18pt-Regular.ttf",
+  variable: "--interRegular",
+  weight: "100 400",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+
+const interMedium = localFont({
+  src: "./fonts/Inter_18pt-Medium.ttf",
+  variable: "--interMedium",
+  weight: "400 500",
+});
+
+const interSemiBold = localFont({
+  src: "./fonts/Inter_18pt-SemiBold.ttf",
+  variable: "--interSemiBold",
+  weight: "600 700",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${interRegular.variable} ${interMedium.variable} ${interSemiBold.variable} antialiased`}
       >
         {children}
       </body>

@@ -2,20 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
-}
+} */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: light) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  /* background: var(--background); */
   font-family: Arial, Helvetica, sans-serif;
+}
+.bg-loginBg{
+  background-image: url("../../public/assets/shutterstock_322888487-2-ql73b798b4ngnw8w8b3ygew6351qvtpdzdwjcka3qc.jpg");
 }
