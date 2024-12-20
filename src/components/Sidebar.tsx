@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import logo from "../../public/assets/Capture.png";
+import logo from "../../public/assets/732112.png";
 export default function Sidebar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null); // Tracks which dropdown is open
 
