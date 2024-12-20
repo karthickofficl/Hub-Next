@@ -4,7 +4,7 @@ export default function Navbar() {
       <h1 className="text-lg font-semibold font-[family-name:var(--interSemiBold)]">Agaram Milk Company</h1>
       <div className="flex items-center space-x-4">
         <button className="p-2 hover:bg-gray-200 rounded-full">
-          {/* <FiUser className="text-xl" /> */}
+          {/* <FiUser className="text-xl"/> */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
