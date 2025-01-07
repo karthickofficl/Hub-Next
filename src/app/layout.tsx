@@ -3,8 +3,10 @@
 import localFont from "next/font/local";
 import "./globals.css";
 
+// redux setup
 import { Provider } from "react-redux";
-import { store } from "@/redux/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "@/redux/store";
 
 const interRegular = localFont({
   src: "./fonts/Inter_18pt-Regular.ttf",
@@ -35,14 +37,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Provider store={store}>
     <html lang="en">
       <body
         className={`${interRegular.variable} ${interMedium.variable} ${interSemiBold.variable} antialiased`}
       >
-        {children}
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            {children}
+          </PersistGate>
+        </Provider>
       </body>
     </html>
-    </Provider>
   );
 }
