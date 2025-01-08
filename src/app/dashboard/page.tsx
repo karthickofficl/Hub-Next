@@ -1,7 +1,97 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+// import { Loader } from "@/components/Loader";
 import BarChart from "@/components/BarChart";
+import {getUsersCount, getDeliveryUsersCount, getOrdersCount, getSubscriptionCount} from "@/lib/api/dashboardApi"
+
+interface User {
+  usersCount: number;
+}
+
+interface DeliveryUser {
+  deliveryUserCount: number;
+}
+
+interface Order {
+  checkOutCount: number;
+}
+
+interface Subscription {
+  subscriptionCount: number;
+}
+
 const Dashboard = () => {
+  const [users, setUsers] = useState<User | null>(null); // Allow null initially
+  const [deliveryUsers, setDeliveryUsers] = useState<DeliveryUser | null>(null); // Allow null initially
+  const [orders, setOrders] = useState<Order | null>(null); // Allow null initially
+  const [Subscriptions, setSubscriptions] = useState<Subscription | null>(null); // Allow null initially
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const hubuserIdSplit = useSelector(
+    (state: RootState) => state.auth.existingUser
+  );
+  const hubuserId = hubuserIdSplit.id;
+
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getUsersCount(hubuserId);
+      setUsers(data); // Use the object directly
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [hubuserId]); // Dependencies listed here
+
+  const fetchDeliveryUsers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getDeliveryUsersCount(hubuserId);
+      setDeliveryUsers(data); // Use the object directly
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [hubuserId]); // Dependencies listed here
+
+  const fetchOrders = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getOrdersCount(hubuserId);
+      setOrders(data); // Use the object directly
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [hubuserId]); // Dependencies listed here
+
+  const fetchSubscriptions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getSubscriptionCount(hubuserId);
+      setSubscriptions(data); // Use the object directly
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [hubuserId]); // Dependencies listed here
+
+  useEffect(() => {
+    fetchUsers();
+    fetchDeliveryUsers();
+    fetchOrders();
+    fetchSubscriptions();
+  }, [fetchUsers, fetchDeliveryUsers, fetchOrders, fetchSubscriptions]);
+
+  console.log("users", users);
+  
   return (
     <>
       <div className="grid grid-cols-4 gap-4">
@@ -27,7 +117,7 @@ const Dashboard = () => {
             Total Users
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-              100879
+            {users ? users.usersCount : 0} {/* Default to 0 if null */}
             </h5>
           </div>
         </div>
@@ -52,7 +142,7 @@ const Dashboard = () => {
             Total Orders
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-              388.00
+            {orders ? orders.checkOutCount : 0} {/* Default to 0 if null */}
             </h5>
           </div>
         </div>
@@ -77,7 +167,7 @@ const Dashboard = () => {
             Total  Delivery Persons
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-              48
+            {deliveryUsers ? deliveryUsers.deliveryUserCount : 0}
             </h5>
           </div>
         </div>
@@ -102,7 +192,7 @@ const Dashboard = () => {
             Total Subscription 
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-              3455
+            {Subscriptions ? Subscriptions.subscriptionCount : 0}
             </h5>
           </div>
         </div>
