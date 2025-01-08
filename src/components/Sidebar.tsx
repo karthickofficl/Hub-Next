@@ -110,7 +110,7 @@ export default function Sidebar() {
         </svg>
       ),
       subMenu: [
-        { name: "History", path: "/dashboard/delivery-attendance" },
+        { name: "History", path: "/dashboard/subscriptions/history" },
         { name: "Unassigned", path: "/dashboard/delivery-manager" },
       ],
     },
@@ -133,7 +133,7 @@ export default function Sidebar() {
         </svg>
       ),
       subMenu: [
-        { name: "History", path: "/dashboard/orders" },
+        { name: "History", path: "/dashboard/orders/history" },
         { name: "Unassigned", path: "/dashboard/delivery-manager" },
       ],
     },
@@ -216,13 +216,13 @@ export default function Sidebar() {
         Admin Panel
       </div> */}
       <div className="text-center flex justify-center border-b">
-        {/* <Image
+        <Image
           src={logo}
           width={100}
           height={100}
           alt="logo"
           priority={false}
-        /> */}
+        />
       </div>
       {/* Menu Items */}
       <nav className="flex-1 p-4">
