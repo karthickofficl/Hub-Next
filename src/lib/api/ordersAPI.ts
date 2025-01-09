@@ -68,7 +68,7 @@ export const getDeliveryUsers = async (hubuserId: string, username: string, emai
   }
 };
 
-export const assignDeliveryPartner = async (hubuserId: string, checkOutId: string, deliveryuserId: string) => {
+export const assignDeliveryPartner = async (hubuserId: string, checkOutId: string, assignedIds:string, deliveryuserId: string) => {
   try {
     // Access localStorage within the function to ensure it's client-side
     const token = localStorage.getItem("token");
@@ -76,7 +76,7 @@ export const assignDeliveryPartner = async (hubuserId: string, checkOutId: strin
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/assign/assignCheckoutHubToDeliveryPartner`,
-      {hubuserId, checkOutId, deliveryuserId},
+      {hubuserId, checkOutId, assignedIds, deliveryuserId},
       {
         headers: {
           "Content-Type": "application/json",

@@ -124,18 +124,19 @@ const OrdersAssign = () => {
   console.log("deliveryPartner", deliveryPartner);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(
-    null
-  );
+  const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(null);
+  const [selectedAssignedId, setSelectedAssignedId] = useState<string | null>(null);
 
-  const handleOpenPopup = (checkoutId: number) => {
+  const handleOpenPopup = (checkoutId: number, assignedIds: string) => {
     setSelectedCheckoutId(checkoutId);
+    setSelectedAssignedId(assignedIds);
     setIsPopupOpen(true);
   };
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     setSelectedCheckoutId(null);
+    setSelectedAssignedId(null);
   };
   // const handleOpenPopup = (id: any) =>{
   //   alert(id);
@@ -265,7 +266,7 @@ const OrdersAssign = () => {
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="size-6"
-                    onClick={() => handleOpenPopup(order?.id)}
+                    onClick={() => handleOpenPopup(order?.id, order?.orderId)}
                   >
                     <path
                       strokeLinecap="round"
@@ -333,6 +334,7 @@ const OrdersAssign = () => {
         isOpen={isPopupOpen}
         onClose={handleClosePopup}
         checkoutId={selectedCheckoutId!}
+        assignedIds={selectedAssignedId!}
         hubuserId={hubuserId}
         deliveryPartner={deliveryPartner}
       />
