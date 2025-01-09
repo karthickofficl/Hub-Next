@@ -29,6 +29,7 @@ interface Product {
 interface Subscription {
   id: number;
   subscriptionOrderId: string;
+  startDate: string;
   status: string;
   totalPrice: string;
   product: Product; // Add this line to include the 'product' object
@@ -123,12 +124,14 @@ const SubscriptionAssign = () => {
   console.log("deliveryPartner", deliveryPartner);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(
-    null
-  );
+  const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(null);
+  const [selectedAssignedId, setSelectedAssignedId] = useState<string | null>(null);
+  const [selectedstartDate, setSelectedStartDate] = useState<string | null>(null);
 
-  const handleOpenPopup = (checkoutId: number) => {
+  const handleOpenPopup = (checkoutId: number, assignedIds: string, startDate: string) => {
     setSelectedCheckoutId(checkoutId);
+    setSelectedAssignedId(assignedIds);
+    setSelectedStartDate(startDate);
     setIsPopupOpen(true);
   };
 
@@ -136,9 +139,7 @@ const SubscriptionAssign = () => {
     setIsPopupOpen(false);
     setSelectedCheckoutId(null);
   };
-  // const handleOpenPopup = (id: any) =>{
-  //   alert(id);
-  // }
+ 
   return (
     <>
       <div className="flex items-center my-3 gap-2 justify-between">
@@ -264,7 +265,7 @@ const SubscriptionAssign = () => {
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="size-6"
-                    onClick={() => handleOpenPopup(subscription?.id)}
+                    onClick={() => handleOpenPopup(subscription?.id, subscription?.subscriptionOrderId, subscription?.startDate)}
                   >
                     <path
                       strokeLinecap="round"
@@ -332,6 +333,8 @@ const SubscriptionAssign = () => {
         isOpen={isPopupOpen}
         onClose={handleClosePopup}
         subscriptionId={selectedCheckoutId!}
+        assignedIds={selectedAssignedId!}
+        startDate={selectedstartDate!}
         hubuserId={hubuserId}
         deliveryPartner={deliveryPartner}
       />

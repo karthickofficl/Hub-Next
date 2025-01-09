@@ -11,6 +11,8 @@ interface AssignPopupProps {
   isOpen: boolean;
   onClose: () => void;
   subscriptionId: number;
+  assignedIds: string;
+  startDate: string;
   hubuserId: string;
   deliveryPartner: DeliveryUser[];
 }
@@ -19,6 +21,8 @@ const AssignPopupSubscription: React.FC<AssignPopupProps> = ({
   isOpen,
   onClose,
   subscriptionId,
+  assignedIds,
+  startDate,
   hubuserId,
   deliveryPartner,
 }) => {
@@ -40,6 +44,8 @@ const AssignPopupSubscription: React.FC<AssignPopupProps> = ({
       await assignDeliveryPartner(
         hubuserId,
         subscriptionId.toString(), // Ensure the ID is passed as a string
+        assignedIds,
+        startDate,
         selectedUser.toString() // Ensure the ID is passed as a string
       );
 
