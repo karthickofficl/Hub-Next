@@ -111,7 +111,7 @@ export default function Sidebar() {
       ),
       subMenu: [
         { name: "History", path: "/dashboard/subscriptions/history" },
-        { name: "Unassigned", path: "/dashboard/delivery-manager" },
+        { name: "Unassigned", path: "/dashboard/subscriptions/assign" },
       ],
     },
     {
@@ -134,7 +134,7 @@ export default function Sidebar() {
       ),
       subMenu: [
         { name: "History", path: "/dashboard/orders/history" },
-        { name: "Unassigned", path: "/dashboard/delivery-manager" },
+        { name: "Unassigned", path: "/dashboard/orders/assign" },
       ],
     },
     // {
