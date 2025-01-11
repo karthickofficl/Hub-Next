@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import logo from "../../public/assets/agaram-logo.jpeg";
+import logo from "../../public/assets/agaram-logo-removebg-preview.png";
 export default function Sidebar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null); // Tracks which dropdown is open
 
@@ -210,7 +210,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="w-64 bg-orange-500 shadow-md flex flex-col min-h-screen">
+    <div className="w-64 bg-[#FFA500] shadow-md flex flex-col min-h-screen">
       {/* Logo */}
       {/* <div className="p-4 text-2xl font-bold text-blue-500 border-b">
         Admin Panel
@@ -218,8 +218,8 @@ export default function Sidebar() {
       <div className="text-center flex justify-center border-b">
         <Image
           src={logo}
-          width={100}
-          height={100}
+          width={200}
+          height={200}
           alt="logo"
           priority={false}
         />
@@ -237,9 +237,9 @@ export default function Sidebar() {
                 onClick={() =>
                   setOpenDropdown(openDropdown === item.name ? null : item.name)
                 }
-                className="text-white flex items-center justify-between w-full text-left p-3 rounded-md hover:bg-black font-[family-name:var(--interSemiBold)]"
+                className="text-white flex items-center justify-between w-full text-left p-3 rounded-md hover:bg-yellow-400 font-[family-name:var(--interSemiBold)]"
               >
-                <div className="flex items-center text-white hover:bg-black">
+                <div className="flex items-center text-white hover:bg-yellow-400">
                   {item.icon && (
                     <span className="text-xl mr-3 text-white">{item.icon}</span>
                   )}
@@ -283,7 +283,7 @@ export default function Sidebar() {
             ) : (
               <button
                 onClick={() => (window.location.href = item.path!)}
-                className="flex items-center p-3 w-full text-left rounded-md hover:bg-black"
+                className="flex items-center p-3 w-full text-left rounded-md hover:bg-yellow-400"
               >
                 {item.icon && <span className="text-xl mr-3">{item.icon}</span>}
                 {item.name}
@@ -297,7 +297,7 @@ export default function Sidebar() {
                   <button
                     key={subItem.name}
                     onClick={() => (window.location.href = subItem.path)}
-                    className="text-white flex items-center w-full text-left p-2 rounded-md hover:bg-black font-[family-name:var(--interSemiBold)]"
+                    className="text-white flex items-center w-full text-left p-2 rounded-md hover:bg-yellow-400 font-[family-name:var(--interSemiBold)]"
                   >
                     {subItem.name}
                   </button>

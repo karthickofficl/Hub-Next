@@ -96,8 +96,8 @@ const Dashboard = () => {
     <>
       <div className="grid grid-cols-4 gap-4">
         {/* <div className="bg-slate-50 rounded border-2 border-[#FFA500] shadow-xl shadow-black/5"> */}
-        <div className="bg-slate-50 rounded-xl border-2 border-[#FFA500] shadow-xl shadow-black/5">
-          <div className="px-4 flex flex-col align-middle justify-center h-32 shadow">
+        <div className="bg-slate-50 rounded-xl border-2 border-[#FFA500] bg-white shadow-xl shadow-black/5">
+          <div className="px-4 flex flex-col align-middle rounded-xl justify-center h-32 shadow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -121,8 +121,8 @@ const Dashboard = () => {
             </h5>
           </div>
         </div>
-        <div className="bg-slate-50 rounded-xl border-2 border-[#FFA500] shadow-xl shadow-black/5">
-          <div className="px-4 flex flex-col align-middle justify-center h-32 shadow">
+        <div className="bg-slate-50 rounded-xl border-2 border-[#FFA500] bg-white shadow-xl shadow-black/5">
+          <div className="px-4 flex flex-col align-middle rounded-xl justify-center h-32 shadow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -146,8 +146,8 @@ const Dashboard = () => {
             </h5>
           </div>
         </div>
-        <div className="bg-slate-50 rounded-xl border-2 border-[#FFA500] shadow-xl shadow-black/5">
-          <div className="px-4 flex flex-col align-middle justify-center h-32 shadow">
+        <div className="bg-slate-50 rounded-xl border-2 bg-white border-[#FFA500] shadow-xl shadow-black/5">
+          <div className="px-4 flex flex-col align-middle rounded-xl justify-center h-32 shadow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -171,8 +171,8 @@ const Dashboard = () => {
             </h5>
           </div>
         </div>
-        <div className="bg-slate-50 rounded-xl border-2 border-[#FFA500] shadow-xl shadow-black/5">
-          <div className="px-4 flex flex-col align-middle justify-center h-32 shadow">
+        <div className="bg-slate-50 rounded-xl border-2 bg-white border-[#FFA500] shadow-xl shadow-black/5">
+          <div className="px-4 flex flex-col align-middle rounded-xl justify-center h-32 shadow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

@@ -126,7 +126,7 @@ const OrdersHistory = () => {
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-[family-name:var(--interRegular)] bg-red-700 text-white rounded flex items-center px-2 py-1"
+              className="font-[family-name:var(--interRegular)] bg-[#FFA500] text-white rounded flex items-center px-2 py-1"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +150,7 @@ const OrdersHistory = () => {
 
       <table className="table-auto w-full border-spacing-2 p-4 border">
         <thead className="text-left font-semibold">
-          <tr className="bg-orange-400 text-white">
+          <tr className="bg-[#FFA500] text-white">
             <th className="p-3">S.No</th>
             <th className="p-3">Order ID</th>
             <th className="p-3">Product Name</th>
@@ -176,7 +176,7 @@ const OrdersHistory = () => {
             subscription.map((subscription, index) => (
               <tr
                 key={subscription.id}
-                className="hover:bg-slate-200 border-y border-slate-200"
+                className="hover:bg-orange-100 cursor-pointer border-y border-slate-200"
               >
                 <td className="p-2 font-[family-name:var(--interRegular)]">{index + 1 + (page - 1) * limit}</td>
                 <td className="p-2 font-[family-name:var(--interRegular)]">{subscription?.subscriptionOrderId}</td>
@@ -193,7 +193,7 @@ const OrdersHistory = () => {
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
-          className="mx-1 p-2 bg-orange-500 text-white rounded flex items-center"
+          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -217,7 +217,7 @@ const OrdersHistory = () => {
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
-          className="mx-1 p-2 bg-orange-500 text-white rounded flex items-center"
+          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
         >
           Next
           <svg

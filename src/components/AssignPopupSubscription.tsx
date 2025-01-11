@@ -95,7 +95,7 @@ const AssignPopupSubscription: React.FC<AssignPopupProps> = ({
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-red-500 text-white rounded-md font-[family-name:var(--interRegular)]"
+            className="px-4 py-2 bg-[#FFA500] text-white rounded-md font-[family-name:var(--interRegular)]"
             disabled={loading}
           >
             Cancel
