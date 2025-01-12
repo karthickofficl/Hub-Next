@@ -2,7 +2,7 @@ export default function Navbar() {
   return (
     <div className="flex justify-between items-center p-4 bg-white shadow-md">
       <h1 className="text-lg font-semibold font-[family-name:var(--interSemiBold)]">
-        Agaram Milk Company
+        Agaram Hub
       </h1>
       <div className="flex items-center space-x-4">
         <button className="p-2 hover:bg-gray-200 rounded-full" title="profile">

@@ -111,18 +111,18 @@ const Home = () => {
             <button
               type="submit"
               onClick={handleLogin}
-              className="w-full font-[family-name:var(--interSemiBold)] rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="w-full font-[family-name:var(--interSemiBold)] rounded-md bg-green-950 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               Login
             </button>
           </div>
           {/* </form> */}
-          <p className="mt-1.5 text-sm/6 text-gray-600 font-[family-name:var(--interMedium)]">
+          {/* <p className="mt-1.5 text-sm/6 text-gray-600 font-[family-name:var(--interMedium)]">
             Dont have an account?{" "}
             <a href="/auth/register" className="text-blue-500">
               Register
             </a>{" "}
-          </p>
+          </p> */}
           <p className="mt-1.5 text-sm/6 text-pink-600 font-[family-name:var(--interMedium)]">
             {validation}
           </p>
