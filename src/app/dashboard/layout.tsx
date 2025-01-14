@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen">
       {/* Sidebar */}
       <Sidebar />
-      <div className="flex-1 flex flex-col bg-gray-100">
+      <div className="flex-1 flex flex-col bg-gray-200">
         {/* Navbar */}
         <Navbar />
         {/* Main Content */}

@@ -14,20 +14,20 @@ import { Loader } from "@/components/Loader";
 // }
 
 interface Product {
-    id: number;
-    productName: string;
-    productDescription: string;
-    price: string;
-    stockQty: string;
-  }
-  
-  interface Subscription {
-    id: number;
-    subscriptionOrderId: string;
-    status: string;
-    totalPrice: string;
-    product: Product; // Add this line to include the 'product' object
-  }
+  id: number;
+  productName: string;
+  productDescription: string;
+  price: string;
+  stockQty: string;
+}
+
+interface Subscription {
+  id: number;
+  subscriptionOrderId: string;
+  status: string;
+  totalPrice: string;
+  product: Product; // Add this line to include the 'product' object
+}
 
 const OrdersHistory = () => {
   const [subscription, setSubscription] = useState<Subscription[]>([]);
@@ -80,7 +80,7 @@ const OrdersHistory = () => {
   };
 
   console.log("subscription", subscription);
-  
+
   return (
     <>
       <div className="flex items-center my-3 gap-2 justify-between">
@@ -109,7 +109,7 @@ const OrdersHistory = () => {
               placeholder="Product Name"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
-              className="font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
+              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900  placeholder:text-gray-400"
             />
           </div>
 
@@ -119,14 +119,14 @@ const OrdersHistory = () => {
               placeholder="Subscription Id"
               value={subscriptionOrderId}
               onChange={(e) => setSubscriptionOrderId(e.target.value)}
-              className="font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
+              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900  placeholder:text-gray-400"
             />
           </div>
           <div className="sm:col-span-2">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-[family-name:var(--interRegular)] bg-[#FFA500] text-white rounded flex items-center px-2 py-1"
+              className="font-[family-name:var(--interRegular)] bg-amber-900 text-white rounded flex items-center px-2 py-1"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +134,7 @@ const OrdersHistory = () => {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-6"
+                className="size-6 pr-2"
               >
                 <path
                   strokeLinecap="round"
@@ -148,14 +148,14 @@ const OrdersHistory = () => {
         </div>
       </div>
 
-      <table className="table-auto w-full border-spacing-2 p-4 border">
+      <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
         <thead className="text-left font-semibold">
-          <tr className="bg-[#FFA500] text-white">
-            <th className="p-3">S.No</th>
-            <th className="p-3">Order ID</th>
-            <th className="p-3">Product Name</th>
-            <th className="p-3">Status</th>
-            <th className="p-3">Total Price</th>
+          <tr className="bg-green-950 text-white rounded-xl border">
+            <th className="py-3 px-2">S.No</th>
+            <th className="py-3 px-2">Order ID</th>
+            <th className="py-3 px-2">Product Name</th>
+            <th className="py-3 px-2">Status</th>
+            <th className="py-3 px-2">Total Price</th>
           </tr>
         </thead>
         <tbody>
@@ -178,11 +178,21 @@ const OrdersHistory = () => {
                 key={subscription.id}
                 className="hover:bg-orange-100 cursor-pointer border-y border-slate-200"
               >
-                <td className="p-2 font-[family-name:var(--interRegular)]">{index + 1 + (page - 1) * limit}</td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">{subscription?.subscriptionOrderId}</td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">{subscription?.product?.productName}</td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">{subscription?.status}</td>
-                <td className="p-2 font-[family-name:var(--interRegular)] truncate">{subscription?.totalPrice}</td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {index + 1 + (page - 1) * limit}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {subscription?.subscriptionOrderId}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {subscription?.product?.productName}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {subscription?.status}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {subscription?.totalPrice}
+                </td>
               </tr>
             ))
           )}
@@ -193,7 +203,7 @@ const OrdersHistory = () => {
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
-          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
+          className="mx-1 p-2 bg-amber-900 cursor-pointer text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -217,7 +227,7 @@ const OrdersHistory = () => {
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
-          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
+          className="mx-1 cursor-pointer p-2 bg-amber-900 text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
         >
           Next
           <svg

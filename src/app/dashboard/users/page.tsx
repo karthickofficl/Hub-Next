@@ -329,7 +329,7 @@ const UsersList = () => {
               placeholder="Full name"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
+              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900  placeholder:text-gray-400"
             />
           </div>
 
@@ -339,14 +339,14 @@ const UsersList = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
+              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
           </div>
           <div className="sm:col-span-2">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-[family-name:var(--interRegular)] bg-[#FFA500] text-white rounded flex items-center px-2 py-1"
+              className="font-[family-name:var(--interRegular)] bg-amber-900 text-white rounded flex items-center px-2 py-1"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -354,7 +354,7 @@ const UsersList = () => {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-6"
+                className="size-6 pr-2"
               >
                 <path
                   strokeLinecap="round"
@@ -368,14 +368,14 @@ const UsersList = () => {
         </div>
       </div>
 
-      <table className="table-auto w-full border-spacing-2 p-4 border">
-        <thead className="text-left font-semibold">
-          <tr className="bg-[#FFA500] text-white">
-            <th className="p-3">S.No</th>
-            <th className="p-3">Full Name</th>
-            <th className="p-3">Email</th>
-            <th className="p-3">Phone</th>
-            <th className="p-3">Address</th>
+      <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
+        <thead className="text-left font-semibold ">
+          <tr className="bg-green-950 text-white rounded-xl border">
+            <th className="py-3 px-2 ">S.No</th>
+            <th className="py-3 px-2">Full Name</th>
+            <th className="py-3 px-2">Email</th>
+            <th className="py-3 px-2">Phone</th>
+            <th className="py-3 px-2">Address</th>
           </tr>
         </thead>
         <tbody>
@@ -396,13 +396,13 @@ const UsersList = () => {
             users.map((user, index) => (
               <tr
                 key={user.id}
-                className="hover:bg-orange-100 cursor-pointer border-y border-slate-200"
+                className="hover:bg-green-100 cursor-pointer border-y"
               >
-                <td className="p-2">{index + 1 + (page - 1) * limit}</td>
-                <td className="p-2">{user.username}</td>
-                <td className="p-2">{user.email}</td>
-                <td className="p-2">{user.phone}</td>
-                <td className="p-2 truncate">{user.address}</td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{index + 1 + (page - 1) * limit}</td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.username}</td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.email}</td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.phone}</td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.address}</td>
               </tr>
             ))
           )}
@@ -413,7 +413,7 @@ const UsersList = () => {
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
-          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
+          className="mx-1 p-2 bg-amber-900 cursor-pointer text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -437,7 +437,7 @@ const UsersList = () => {
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
-          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
+          className="mx-1 cursor-pointer p-2 bg-amber-900 text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
         >
           Next
           <svg

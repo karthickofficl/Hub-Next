@@ -168,7 +168,7 @@ const SubscriptionAssign = () => {
               placeholder="Product Name"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
-              className="font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
+              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900  placeholder:text-gray-400"
             />
           </div>
 
@@ -178,14 +178,14 @@ const SubscriptionAssign = () => {
               placeholder="Order Id"
               value={subscriptionOrderId}
               onChange={(e) => setSubscriptionOrderId(e.target.value)}
-              className="font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
+              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900  placeholder:text-gray-400"
             />
           </div>
           <div className="sm:col-span-2">
             <button
               type="button"
               onClick={handleRefresh}
-              className="font-[family-name:var(--interRegular)] bg-[#FFA500] text-white rounded flex items-center px-2 py-1"
+              className="font-[family-name:var(--interRegular)] bg-amber-900 text-white rounded flex items-center px-2 py-1"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +193,7 @@ const SubscriptionAssign = () => {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-6"
+                className="size-6 pr-2"
               >
                 <path
                   strokeLinecap="round"
@@ -207,16 +207,16 @@ const SubscriptionAssign = () => {
         </div>
       </div>
 
-      <table className="table-auto w-full border-spacing-2 p-4 border">
+      <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
         <thead className="text-left font-semibold">
-          <tr className="bg-[#FFA500] text-white">
-            <th className="p-3">S.No</th>
-            <th className="p-3">Order ID</th>
-            <th className="p-3">Product Name</th>
-            <th className="p-3">Payment Status</th>
-            <th className="p-3">Total Price</th>
-            <th className="p-3">Assign Status</th>
-            <th className="p-3">Action</th>
+          <tr className="bg-green-950 text-white rounded-xl border">
+            <th className="py-3 px-2">S.No</th>
+            <th className="py-3 px-2">Order ID</th>
+            <th className="py-3 px-2">Product Name</th>
+            <th className="py-3 px-2">Payment Status</th>
+            <th className="py-3 px-2">Total Price</th>
+            <th className="py-3 px-2">Assign Status</th>
+            <th className="py-3 px-2">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -230,34 +230,34 @@ const SubscriptionAssign = () => {
           ) : subscriptions.length === 0 ? (
             <tr>
               <td colSpan={5} className="text-center p-4">
-                No users found.
+                No Subscription found.
               </td>
             </tr>
           ) : (
             subscriptions.map((subscription, index) => (
               <tr
                 key={subscription.id}
-                className="cursor-pointer hover:bg-orange-100 border-y border-slate-200"
+                className="hover:bg-green-100 cursor-pointer border-y"
               >
-                <td className="p-2 font-[family-name:var(--interRegular)]">
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {index + 1 + (page - 1) * limit}
                 </td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {subscription?.subscriptionOrderId}
                 </td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {subscription?.product?.productName}
                 </td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {subscription?.status}
                 </td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {subscription?.totalPrice}
                 </td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {subscription?.deliveryuserId == null ? "Un Assigned" : "Assigned"}
                 </td>
-                <td className="p-2 font-[family-name:var(--interRegular)]">
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -284,7 +284,7 @@ const SubscriptionAssign = () => {
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
-          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
+          className="mx-1 p-2 bg-amber-900 cursor-pointer text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -308,7 +308,7 @@ const SubscriptionAssign = () => {
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
-          className="mx-1 p-2 bg-[#FFA500] text-white rounded flex items-center"
+          className="mx-1 cursor-pointer p-2 bg-amber-900 text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
         >
           Next
           <svg

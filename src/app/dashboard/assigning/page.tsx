@@ -3,7 +3,7 @@ import React from 'react'
 const Assigning = () => {
   return (
     <table className="table-fixed w-full border-spacing-2 p-4">
-      <thead className="text-left font-[family-name:var(--interSemiBold)]  ">
+      <thead className="text-left font-[family-name:var(--interSemiBold)] ">
         <tr className="bg-[#FFA500] rounded">
           <th className="p-3">Order ID</th>
           <th className="p-3">Product name</th>
