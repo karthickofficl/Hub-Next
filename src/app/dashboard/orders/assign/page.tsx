@@ -4,18 +4,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import {
   getUnassignedCheckout,
-  getDeliveryUsers,
+  getAllDeliveryUsersHubDropdown,
+  assignDeliveryPartner,
 } from "@/lib/api/ordersAPI";
 import { Loader } from "@/components/Loader";
-
-import AssignPopup from "@/components/AssignPopup";
-// interface Subscription {
-//   id: number;
-//   productName: string;
-//   subscriptionOrderId: string;
-//   status: string;
-//   totalPrice: string;
-// }
+import { toast } from 'react-toastify';
 
 interface Product {
   id: number;
@@ -31,8 +24,8 @@ interface Order {
   status: string;
   totalPrice: string;
   paymentStatus: string;
-  product: Product; // Add this line to include the 'product' object
-  deliveryuserId: null;
+  product: Product;
+  deliveryuserId: null | number;
 }
 
 interface DeliveryPartner {
@@ -43,6 +36,7 @@ interface DeliveryPartner {
 
 const OrdersAssign = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [deliveryPartner, setDeliveryPartner] = useState<DeliveryPartner[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [productName, setProductName] = useState<string>("");
   const [orderId, setorderId] = useState<string>("");
@@ -50,15 +44,24 @@ const OrdersAssign = () => {
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
 
-  // Delivery Users
-  const [deliveryPartner, setDeliveryPartner] = useState<DeliveryPartner[]>([]);
-
-  const hubuserIdSplit = useSelector(
-    (state: RootState) => state.auth.existingUser
+  // Popup states
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+  const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(
+    null
   );
-  const hubuserId = hubuserIdSplit.id;
+  const [selectedAssignedId, setSelectedAssignedId] = useState<string | null>(
+    null
+  );
+  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [popupLoading, setPopupLoading] = useState(false);
+  const [popupError, setPopupError] = useState<string | null>(null);
 
-  const fetchUsers = useCallback(async () => {
+  const hubuserId = useSelector(
+    (state: RootState) => state.auth.existingUser?.id
+  );
+
+  // Fetch orders
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getUnassignedCheckout(
@@ -71,40 +74,26 @@ const OrdersAssign = () => {
       setOrders(data?.checkouts || []);
       setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
-      console.log("Error fetching users:", error);
+      console.error("Error fetching orders:", error);
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, productName, orderId, page, limit]); // Dependencies listed here
+  }, [hubuserId, productName, orderId, page, limit]);
 
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, [fetchUsers]); // Add fetchUsers in the dependency array
-
-  // Delivery partner
+  // Fetch delivery partners
   const fetchDeliveryUsers = useCallback(async () => {
-    setLoading(true);
     try {
-      const data = await getDeliveryUsers(
-        hubuserId,
-        productName,
-        orderId,
-        page.toString(),
-        limit.toString()
-      );
+      const data = await getAllDeliveryUsersHubDropdown(hubuserId);
       setDeliveryPartner(data?.users || []);
-      setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
-      console.log("Error fetching users:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching delivery users:", error);
     }
-  }, [hubuserId, productName, orderId, page, limit]); // Dependencies listed here
+  }, [hubuserId]);
 
   useEffect(() => {
-    fetchUsers();
+    fetchOrders();
     fetchDeliveryUsers();
-  }, [fetchUsers, fetchDeliveryUsers]); // Add fetchUsers in the dependency array
+  }, [fetchOrders, fetchDeliveryUsers]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -116,15 +105,8 @@ const OrdersAssign = () => {
     setProductName("");
     setorderId("");
     setPage(1);
-    fetchUsers();
+    fetchOrders();
   };
-
-  console.log("orders", orders);
-  console.log("deliveryPartner", deliveryPartner);
-
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(null);
-  const [selectedAssignedId, setSelectedAssignedId] = useState<string | null>(null);
 
   const handleOpenPopup = (checkoutId: number, assignedIds: string) => {
     setSelectedCheckoutId(checkoutId);
@@ -136,12 +118,40 @@ const OrdersAssign = () => {
     setIsPopupOpen(false);
     setSelectedCheckoutId(null);
     setSelectedAssignedId(null);
+    setSelectedUser(null);
+    setPopupError(null);
   };
-  // const handleOpenPopup = (id: any) =>{
-  //   alert(id);
-  // }
+
+  const handleAssign = async () => {
+    if (!selectedUser) {
+      setPopupError("Please select a delivery user.");
+      return;
+    }
+
+    setPopupLoading(true);
+    setPopupError(null);
+    try {
+      await assignDeliveryPartner(
+        hubuserId,
+        selectedCheckoutId!.toString(),
+        selectedAssignedId!,
+        selectedUser.toString()
+      );
+      // alert("Checkout assigned successfully!");
+      toast.success("Checkout assigned successfully!");
+      handleClosePopup();
+      fetchOrders();
+    } catch (error) {
+      console.error("Failed to assign checkout", error);
+      setPopupError("Failed to assign checkout. Please try again.");
+    } finally {
+      setPopupLoading(false);
+    }
+  };
+
   return (
     <>
+      {/* Search Section */}
       <div className="flex items-center my-3 gap-2 justify-between">
         <h5 className="font-[family-name:var(--interSemiBold)] flex items-center">
           Orders{" "}
@@ -207,9 +217,10 @@ const OrdersAssign = () => {
         </div>
       </div>
 
-      <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
+      {/* Orders Table */}
+      <table className="table-auto w-full border bg-white rounded-xl">
         <thead className="text-left font-semibold">
-          <tr className="bg-green-950 text-white rounded-xl border">
+          <tr className="bg-green-950 text-white font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
             <th className="py-3 px-2">Order ID</th>
             <th className="py-3 px-2">Product Name</th>
@@ -222,14 +233,13 @@ const OrdersAssign = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={5} className="text-center p-4">
-                {/* Loading users... */}
+              <td colSpan={7} className="text-center">
                 <Loader />
               </td>
             </tr>
           ) : orders.length === 0 ? (
             <tr>
-              <td colSpan={5} className="text-center p-4">
+              <td colSpan={7} className="text-center">
                 No orders found.
               </td>
             </tr>
@@ -243,36 +253,40 @@ const OrdersAssign = () => {
                   {index + 1 + (page - 1) * limit}
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {order?.orderId}
+                  {order.orderId}
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {order?.product?.productName}
+                  {order.product.productName}
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {order?.paymentStatus}
+                  {order.paymentStatus}
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {order?.totalPrice}
+                  {order.totalPrice}
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {order?.deliveryuserId == null ? "Un Assigned" : "Assigned"}
+                  {order.deliveryuserId == null ? "Unassigned" : "Assigned"}
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                    onClick={() => handleOpenPopup(order?.id, order?.orderId)}
+                  <button
+                    onClick={() => handleOpenPopup(order.id, order.orderId)}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                    />
-                  </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                      // onClick={() => handleOpenPopup(subscription?.id, subscription?.subscriptionOrderId, subscription?.startDate)}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                      />
+                    </svg>
+                  </button>
                 </td>
               </tr>
             ))
@@ -280,6 +294,7 @@ const OrdersAssign = () => {
         </tbody>
       </table>
 
+      {/* Pagination */}
       <div className="flex justify-center items-center mt-4">
         <button
           onClick={() => handlePageChange(page - 1)}
@@ -329,14 +344,42 @@ const OrdersAssign = () => {
       </div>
 
       {/* Popup */}
-      <AssignPopup
-        isOpen={isPopupOpen}
-        onClose={handleClosePopup}
-        checkoutId={selectedCheckoutId!}
-        assignedIds={selectedAssignedId!}
-        hubuserId={hubuserId}
-        deliveryPartner={deliveryPartner}
-      />
+      {isPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-xl">
+            <h2 className="text-xl font-semibold mb-4 font-[family-name:var(--interSemiBold)]">
+              Assign Delivery Partner
+            </h2>
+            {popupError && <p className="text-red-500 mb-4">{popupError}</p>}
+            <select
+              value={selectedUser || ""}
+              onChange={(e) => setSelectedUser(Number(e.target.value))}
+              className="block w-full p-2 border rounded-md mb-4 font-[family-name:var(--interRegular)]"
+            >
+              <option value="">Select Delivery User</option>
+              {deliveryPartner.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username} - {user.address}
+                </option>
+              ))}
+            </select>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleClosePopup}
+                className="bg-red-600 text-white rounded px-4 py-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAssign}
+                className="bg-green-950 text-white rounded px-4 py-2"
+              >
+                {popupLoading ? "Assigning..." : "Assign"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

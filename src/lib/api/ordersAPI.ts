@@ -46,14 +46,14 @@ export const getUnassignedCheckout = async (hubuserId: string, productName: stri
   }
 };
 
-export const getDeliveryUsers = async (hubuserId: string, username: string, email: string, page: string, limit: string) => {
+export const getAllDeliveryUsersHubDropdown = async (hubuserId: string) => {
   try {
     // Access localStorage within the function to ensure it's client-side
     const token = localStorage.getItem("token");
     console.log("token", token);
 
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/delivery/user/getAllDeliveryUsersHub?hubuserId=${hubuserId}&username=${username}&email=${email}&page=${page}&limit=${limit}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/delivery/user/getAllDeliveryUsersHub?hubuserId=${hubuserId}`,
       {
         headers: {
           "Content-Type": "application/json",

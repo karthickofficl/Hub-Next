@@ -151,7 +151,7 @@ const OrdersHistory = () => {
 
       <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
         <thead className="text-left font-semibold">
-          <tr className="bg-green-950 text-white rounded-xl border">
+          <tr className="bg-green-950 text-white rounded-xl border font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
             <th className="py-3 px-2">Order ID</th>
             <th className="py-3 px-2">Product Name</th>

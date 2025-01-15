@@ -5,12 +5,13 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/api/authApi";
 import { setAuth } from "@/redux/slices/authSlice";
-import { Alert } from "@/components/Alert";
+// import { Alert } from "@/components/Alert";
+import { toast } from 'react-toastify';
 
 const Home = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [resMessage, setResMessage] = useState("");
+  // const [resMessage, setResMessage] = useState("");
 
   const [validation, setValidation] = useState("");
   const router = useRouter();
@@ -43,24 +44,25 @@ const Home = () => {
       );
 
       dispatch(setAuth({ token, existingUser })); // Save token and user to Redux
-      setResMessage(message); // Set success message
+      // setResMessage(message); // Set success message
+      toast.success(message);
       router.push("/dashboard");
     } catch (error) {
       console.log(error);
-      setResMessage(
-        // error?.response?.data?.error || 
-        "Login failed. Please try again."
-      ); // Set error message based on API response
+      toast.error("Login failed. Please try again.");
+      // setResMessage( 
+      //   "Login failed. Please try again."
+      // ); // Set error message based on API response
     }
   };
 
-  const handleCloseAlert = () => {
-    setResMessage("");
-  };
+  // const handleCloseAlert = () => {
+  //   setResMessage("");
+  // };
 
   return (
     <div className="min-h-screen ">
-      <Alert resMessage={resMessage} onClose={handleCloseAlert} />
+      {/* <Alert resMessage={resMessage} onClose={handleCloseAlert} /> */}
       <main className="bg-[url('../../public/assets/shutterstock_322888487-2-ql73b798b4ngnw8w8b3ygew6351qvtpdzdwjcka3qc.jpg')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center justify-center">
         <div className="bg-white/80 p-8 rounded-lg shadow-lg w-3/12">
           <h1 className="text-2xl font-bold mb-4 font-[family-name:var(--interSemiBold)]">

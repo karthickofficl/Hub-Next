@@ -150,7 +150,7 @@ const OrdersHistory = () => {
 
       <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
         <thead className="text-left font-semibold">
-          <tr className="bg-green-950 text-white rounded-xl border">
+          <tr className="bg-green-950 text-white rounded-xl border font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
             <th className="py-3 px-2">Order ID</th>
             <th className="py-3 px-2">Product Name</th>
@@ -176,7 +176,7 @@ const OrdersHistory = () => {
             subscription.map((subscription, index) => (
               <tr
                 key={subscription.id}
-                className="hover:bg-orange-100 cursor-pointer border-y border-slate-200"
+                className="hover:bg-green-100 cursor-pointer border-y border-slate-200"
               >
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {index + 1 + (page - 1) * limit}

@@ -7,6 +7,8 @@ import "./globals.css";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "@/redux/store";
+import { ToastContainer, Bounce } from "react-toastify"; // Import toastify
+import "react-toastify/dist/ReactToastify.css"; // Ensure Toastify styles are imported
 
 const interRegular = localFont({
   src: "./fonts/Inter_18pt-Regular.ttf",
@@ -46,6 +48,19 @@ export default function RootLayout({
             {children}
           </PersistGate>
         </Provider>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce} // Use Bounce animation
+        />
       </body>
     </html>
   );

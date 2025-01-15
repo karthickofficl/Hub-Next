@@ -3,20 +3,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import {
-//   getCheckout,
   getUnassignedSubscription,
-  getDeliveryUsers,
+  getAllDeliveryUsersHubDropdown,
+  assignDeliveryPartner,
 } from "@/lib/api/subscriptionApi";
 import { Loader } from "@/components/Loader";
-
-import AssignPopupSubscription from "@/components/AssignPopupSubscription";
-// interface Subscription {
-//   id: number;
-//   productName: string;
-//   subscriptionOrderId: string;
-//   status: string;
-//   totalPrice: string;
-// }
+import { toast } from 'react-toastify';
 
 interface Product {
   id: number;
@@ -32,7 +24,7 @@ interface Subscription {
   startDate: string;
   status: string;
   totalPrice: string;
-  product: Product; // Add this line to include the 'product' object
+  product: Product;
   deliveryuserId: null;
 }
 
@@ -50,14 +42,11 @@ const SubscriptionAssign = () => {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
-
-  // Delivery Users
   const [deliveryPartner, setDeliveryPartner] = useState<DeliveryPartner[]>([]);
 
-  const hubuserIdSplit = useSelector(
-    (state: RootState) => state.auth.existingUser
+  const hubuserId = useSelector(
+    (state: RootState) => state.auth.existingUser.id
   );
-  const hubuserId = hubuserIdSplit.id;
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -72,40 +61,28 @@ const SubscriptionAssign = () => {
       setSubscriptions(data?.subscriptions || []);
       setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
-      console.log("Error fetching users:", error);
+      console.error("Error fetching subscriptions:", error);
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, productName, subscriptionOrderId, page, limit]); // Dependencies listed here
+  }, [hubuserId, productName, subscriptionOrderId, page, limit]);
 
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, [fetchUsers]); // Add fetchUsers in the dependency array
-
-  // Delivery partner
   const fetchDeliveryUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getDeliveryUsers(
-        hubuserId,
-        productName,
-        subscriptionOrderId,
-        page.toString(),
-        limit.toString()
-      );
+      const data = await getAllDeliveryUsersHubDropdown(hubuserId);
       setDeliveryPartner(data?.users || []);
-      setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
-      console.log("Error fetching users:", error);
+      console.error("Error fetching delivery users:", error);
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, productName, subscriptionOrderId, page, limit]); // Dependencies listed here
+  }, [hubuserId]);
 
   useEffect(() => {
     fetchUsers();
     fetchDeliveryUsers();
-  }, [fetchUsers, fetchDeliveryUsers]); // Add fetchUsers in the dependency array
+  }, [fetchUsers, fetchDeliveryUsers]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -120,31 +97,62 @@ const SubscriptionAssign = () => {
     fetchUsers();
   };
 
-  console.log("subscriptions", subscriptions);
-  console.log("deliveryPartner", deliveryPartner);
-
+  // Popup State Management
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(null);
-  const [selectedAssignedId, setSelectedAssignedId] = useState<string | null>(null);
-  const [selectedstartDate, setSelectedStartDate] = useState<string | null>(null);
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<Subscription | null>(null);
+  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [popupError, setPopupError] = useState<string | null>(null);
+  const [assignLoading, setAssignLoading] = useState(false);
 
-  const handleOpenPopup = (checkoutId: number, assignedIds: string, startDate: string) => {
-    setSelectedCheckoutId(checkoutId);
-    setSelectedAssignedId(assignedIds);
-    setSelectedStartDate(startDate);
+  const handleOpenPopup = (subscription: Subscription) => {
+    setSelectedSubscription(subscription);
     setIsPopupOpen(true);
   };
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
-    setSelectedCheckoutId(null);
+    setSelectedSubscription(null);
+    setSelectedUser(null);
+    setPopupError(null);
   };
- 
+
+  const handleAssign = async () => {
+    if (!selectedUser || !selectedSubscription) {
+      setPopupError("Please select a delivery user.");
+      return;
+    }
+
+    setAssignLoading(true);
+    setPopupError(null);
+
+    try {
+      await assignDeliveryPartner(
+        hubuserId,
+        selectedSubscription.id.toString(),
+        selectedSubscription.subscriptionOrderId,
+        selectedSubscription.startDate,
+        selectedUser.toString()
+      );
+
+      // alert("Subscription assigned successfully!");
+      toast.success("Subscription assigned successfully!");
+      handleClosePopup();
+      fetchUsers();
+    } catch (err) {
+      console.error("Failed to assign subscription", err);
+      setPopupError("Failed to assign subscription. Please try again.");
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
   return (
     <>
+      {/* Search Section */}
       <div className="flex items-center my-3 gap-2 justify-between">
         <h5 className="font-[family-name:var(--interSemiBold)] flex items-center">
-          Orders{" "}
+          Subscription{" "}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -207,9 +215,9 @@ const SubscriptionAssign = () => {
         </div>
       </div>
 
-      <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
+      <table className="table-auto w-full border bg-white rounded-xl">
         <thead className="text-left font-semibold">
-          <tr className="bg-green-950 text-white rounded-xl border">
+          <tr className="bg-green-950 text-white font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
             <th className="py-3 px-2">Order ID</th>
             <th className="py-3 px-2">Product Name</th>
@@ -222,14 +230,13 @@ const SubscriptionAssign = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={5} className="text-center p-4">
-                {/* Loading users... */}
+              <td colSpan={7} className="text-center p-4">
                 <Loader />
               </td>
             </tr>
           ) : subscriptions.length === 0 ? (
             <tr>
-              <td colSpan={5} className="text-center p-4">
+              <td colSpan={7} className="text-center p-4">
                 No Subscription found.
               </td>
             </tr>
@@ -237,42 +244,46 @@ const SubscriptionAssign = () => {
             subscriptions.map((subscription, index) => (
               <tr
                 key={subscription.id}
-                className="hover:bg-green-100 cursor-pointer border-y"
+                className="hover:bg-green-100 cursor-pointer border-y font-[family-name:var(--interRegular)]"
               >
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {index + 1 + (page - 1) * limit}
+                <td className="py-3 px-2">{index + 1 + (page - 1) * limit}</td>
+                <td className="py-3 px-2">
+                  {subscription.subscriptionOrderId}
                 </td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {subscription?.subscriptionOrderId}
+                <td className="py-3 px-2">
+                  {subscription.product.productName}
                 </td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {subscription?.product?.productName}
+                <td className="py-3 px-2">{subscription.status}</td>
+                <td className="py-3 px-2">{subscription.totalPrice}</td>
+                <td className="py-3 px-2">
+                  {subscription.deliveryuserId == null
+                    ? "Unassigned"
+                    : "Assigned"}
                 </td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {subscription?.status}
-                </td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {subscription?.totalPrice}
-                </td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {subscription?.deliveryuserId == null ? "Un Assigned" : "Assigned"}
-                </td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                    onClick={() => handleOpenPopup(subscription?.id, subscription?.subscriptionOrderId, subscription?.startDate)}
+                <td className="py-3 px-2">
+                  {/* <button
+                    onClick={() => handleOpenPopup(subscription)}
+                    className="text-blue-600 underline"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                    />
-                  </svg>
+                    Assign
+                  </button> */}
+                  <button onClick={() => handleOpenPopup(subscription)}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                      // onClick={() => handleOpenPopup(subscription?.id, subscription?.subscriptionOrderId, subscription?.startDate)}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                      />
+                    </svg>
+                  </button>
                 </td>
               </tr>
             ))
@@ -284,22 +295,8 @@ const SubscriptionAssign = () => {
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
-          className="mx-1 p-2 bg-amber-900 cursor-pointer text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
+          className="bg-amber-900 text-white px-4 py-2 rounded mx-1"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
-            />
-          </svg>
           Prev
         </button>
         <span className="mx-2">
@@ -308,38 +305,50 @@ const SubscriptionAssign = () => {
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
-          className="mx-1 cursor-pointer p-2 bg-amber-900 text-white rounded flex items-center font-[family-name:var(--interSemiBold)]"
+          className="bg-amber-900 text-white px-4 py-2 rounded mx-1"
         >
           Next
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5"
-            />
-          </svg>
         </button>
       </div>
 
       {/* Popup */}
-      <AssignPopupSubscription
-        isOpen={isPopupOpen}
-        onClose={handleClosePopup}
-        subscriptionId={selectedCheckoutId!}
-        assignedIds={selectedAssignedId!}
-        startDate={selectedstartDate!}
-        hubuserId={hubuserId}
-        deliveryPartner={deliveryPartner}
-      />
+      {isPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-xl">
+            <h2 className="text-xl font-semibold mb-4 font-[family-name:var(--interSemiBold)]">
+              Assign Delivery Partner
+            </h2>
+            {popupError && <p className="text-red-500 mb-4">{popupError}</p>}
+            <select
+              value={selectedUser || ""}
+              onChange={(e) => setSelectedUser(Number(e.target.value))}
+              className="block w-full p-2 border rounded-md mb-4 font-[family-name:var(--interRegular)]"
+            >
+              <option value="">Select Delivery User</option>
+              {deliveryPartner.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username} - {user.address}
+                </option>
+              ))}
+            </select>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleClosePopup}
+                className="bg-red-600 text-white rounded px-4 py-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAssign}
+                className="bg-green-950 text-white rounded px-4 py-2"
+              >
+                {assignLoading ? "Assigning..." : "Assign"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
-
 export default SubscriptionAssign;
