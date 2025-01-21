@@ -1,4 +1,18 @@
+"use client"; // Mark this file as a Client Component
+// import { useSelector } from "react-redux";
+// import { RootState } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { logout } from "@/redux/slices/authSlice";
 export default function Navbar() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const handleLogOut = () => {
+    // localStorage.removeItem("token");
+    dispatch(logout());
+    // Redirect to the home page after logout
+    router.push("/");
+  };
   return (
     <div className="flex justify-between items-center p-4 bg-white shadow-md">
       <h1 className="text-lg font-semibold font-[family-name:var(--interSemiBold)]">
@@ -22,8 +36,11 @@ export default function Navbar() {
             />
           </svg>
         </button>
-        <button className="p-2 hover:bg-gray-200 rounded-full" title="logout">
-          {/* <FiSettings className="text-xl" /> */}
+        <button
+          className="p-2 hover:bg-gray-200 rounded-full"
+          title="logout"
+          onClick={handleLogOut}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

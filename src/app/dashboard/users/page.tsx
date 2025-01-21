@@ -26,7 +26,7 @@
 //   );
 //   console.log("hubuserIdSplit", hubuserIdSplit);
 
-//   const hubuserId = hubuserIdSplit.id;
+//   const hubuserId = hubuserIdSplit?.id;
 //   // const hubuserId = "10";
 
 //   const fetchUsers = async () => {
@@ -281,7 +281,7 @@ const UsersList = () => {
   const hubuserIdSplit = useSelector(
     (state: RootState) => state.auth.existingUser
   );
-  const hubuserId = hubuserIdSplit.id;
+  const hubuserId = hubuserIdSplit?.id;
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);

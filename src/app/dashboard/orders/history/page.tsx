@@ -42,7 +42,7 @@ const OrdersHistory = () => {
   const hubuserIdSplit = useSelector(
     (state: RootState) => state.auth.existingUser
   );
-  const hubuserId = hubuserIdSplit.id;
+  const hubuserId = hubuserIdSplit?.id;
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
