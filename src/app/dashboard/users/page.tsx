@@ -258,7 +258,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { getUsers } from "@/lib/api/userApi";
+import { getUsers, getSingleUsers } from "@/lib/api/userApi";
 import { Loader } from "@/components/Loader";
 
 interface User {
@@ -267,6 +267,9 @@ interface User {
   email: string;
   phone: string;
   address: string;
+  city: string;
+  state: string;
+  pincode: string;
 }
 
 const UsersList = () => {
@@ -277,6 +280,8 @@ const UsersList = () => {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); // For offcanvas
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState<boolean>(false);
 
   const hubuserIdSplit = useSelector(
     (state: RootState) => state.auth.existingUser
@@ -300,11 +305,24 @@ const UsersList = () => {
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, username, email, page, limit]); // Dependencies listed here
+  }, [hubuserId, username, email, page, limit]);
+
+  const fetchSingleUser = async (userId: number) => {
+    try {
+      setLoading(true);
+      const user = await getSingleUsers(userId);
+      setSelectedUser(user);
+      setIsOffcanvasOpen(true); // Open the offcanvas
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]); // Add fetchUsers in the dependency array
+  }, [fetchUsers]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -318,18 +336,24 @@ const UsersList = () => {
     setPage(1);
     fetchUsers();
   };
+
+  const handleCloseOffcanvas = () => {
+    setIsOffcanvasOpen(false);
+    setSelectedUser(null);
+  };
+
   return (
     <>
       <div className="flex items-center my-3 gap-2 justify-between">
         <h5 className="font-[family-name:var(--interSemiBold)]">Users</h5>
-        <div className=" items-center grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 lg:grid-cols-8">
+        <div className="items-center grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 lg:grid-cols-8">
           <div className="sm:col-span-3">
             <input
               type="search"
               placeholder="Full name"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900  placeholder:text-gray-400"
+              className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
           </div>
 
@@ -369,26 +393,26 @@ const UsersList = () => {
       </div>
 
       <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
-        <thead className="text-left font-semibold ">
+        <thead className="text-left font-semibold">
           <tr className="bg-green-950 text-white rounded-xl border font-[family-name:var(--interSemiBold)]">
-            <th className="py-3 px-2 ">S.No</th>
+            <th className="py-3 px-2">S.No</th>
             <th className="py-3 px-2">Full Name</th>
             <th className="py-3 px-2">Email</th>
             <th className="py-3 px-2">Phone</th>
             <th className="py-3 px-2">Address</th>
+            <th className="py-3 px-2">Action</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={5} className="text-center p-4">
-                {/* Loading users... */}
+              <td colSpan={6} className="text-center p-4">
                 <Loader />
               </td>
             </tr>
           ) : users.length === 0 ? (
             <tr>
-              <td colSpan={5} className="text-center p-4">
+              <td colSpan={6} className="text-center p-4">
                 No users found.
               </td>
             </tr>
@@ -398,11 +422,43 @@ const UsersList = () => {
                 key={user.id}
                 className="hover:bg-green-100 cursor-pointer border-y"
               >
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{index + 1 + (page - 1) * limit}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.username}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.email}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.phone}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.address}</td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  {index + 1 + (page - 1) * limit}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  {user.username}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  {user.email}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  {user.phone}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  {user.address}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  <svg
+                    onClick={() => fetchSingleUser(user.id)}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6 cursor-pointer"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                  </svg>
+                </td>
               </tr>
             ))
           )}
@@ -456,6 +512,49 @@ const UsersList = () => {
           </svg>
         </button>
       </div>
+
+      {/* Offcanvas for User Details */}
+      {isOffcanvasOpen && selectedUser && (
+        <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg z-50 overflow-auto">
+          <div className="p-4">
+            <div className="flex items-center justify-between bg-green-950 px-3 py-2">
+              <h3 className="text-white font-bold text-lg  font-[family-name:var(--interSemiBold)]">
+                User Details
+              </h3>
+              <button
+                onClick={handleCloseOffcanvas}
+                className="text-red-600 text-lg  font-[family-name:var(--interSemiBold)]"
+              >
+                Close
+              </button>
+            </div>
+            <div className="mt-3">
+              <p className="font-[family-name:var(--interRegular)]">
+                <strong>Full Name:</strong> {selectedUser.username}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Email:</strong> {selectedUser.email}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Phone:</strong> {selectedUser.phone}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Address:</strong> {selectedUser.address}
+              </p>
+
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>City:</strong> {selectedUser.city}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>State:</strong> {selectedUser.state}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Pincode:</strong> {selectedUser.pincode}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
