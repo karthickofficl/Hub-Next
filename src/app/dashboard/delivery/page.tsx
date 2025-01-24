@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { getUsers } from "@/lib/api/deliveryUserApi";
+import { getUsers, getSingleDeliveryUsers } from "@/lib/api/deliveryUserApi";
 import { Loader } from "@/components/Loader";
 
 interface User {
@@ -11,6 +11,10 @@ interface User {
   email: string;
   phone: string;
   address: string;
+  branchName: string;
+  accountHolderName: string;
+  accountNo: string;
+  IFSCNO: string;
 }
 
 const DeliveryUsersList = () => {
@@ -21,6 +25,9 @@ const DeliveryUsersList = () => {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); // For offcanvas
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState<boolean>(false);
 
   const hubuserIdSplit = useSelector(
     (state: RootState) => state.auth.existingUser
@@ -46,6 +53,19 @@ const DeliveryUsersList = () => {
     }
   }, [hubuserId, username, email, page, limit]); // Dependencies listed here
 
+  const fetchSingleUser = async (userId: number) => {
+    try {
+      setLoading(true);
+      const user = await getSingleDeliveryUsers(userId);
+      setSelectedUser(user);
+      setIsOffcanvasOpen(true); // Open the offcanvas
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]); // Add fetchUsers in the dependency array
@@ -61,6 +81,11 @@ const DeliveryUsersList = () => {
     setEmail("");
     setPage(1);
     fetchUsers();
+  };
+
+  const handleCloseOffcanvas = () => {
+    setIsOffcanvasOpen(false);
+    setSelectedUser(null);
   };
   return (
     <>
@@ -122,6 +147,7 @@ const DeliveryUsersList = () => {
             <th className="py-3 px-2">Email</th>
             <th className="py-3 px-2">Phone</th>
             <th className="py-3 px-2">Address</th>
+            <th className="py-3 px-2">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -144,11 +170,43 @@ const DeliveryUsersList = () => {
                 key={user.id}
                 className="hover:bg-green-100 cursor-pointer border-y"
               >
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{index + 1 + (page - 1) * limit}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.username}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.email}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.phone}</td>
-                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">{user.address}</td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {index + 1 + (page - 1) * limit}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {user.username}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {user.email}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {user.phone}
+                </td>
+                <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {user.address}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  <svg
+                    onClick={() => fetchSingleUser(user.id)}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6 cursor-pointer"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                  </svg>
+                </td>
               </tr>
             ))
           )}
@@ -202,6 +260,49 @@ const DeliveryUsersList = () => {
           </svg>
         </button>
       </div>
+
+      {/* Offcanvas for User Details */}
+      {isOffcanvasOpen && selectedUser && (
+        <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg z-50 overflow-auto">
+          <div className="p-4">
+            <div className="flex items-center justify-between bg-green-950 px-3 py-2">
+              <h3 className="text-white font-bold text-lg  font-[family-name:var(--interSemiBold)]">
+                User Details
+              </h3>
+              <button
+                onClick={handleCloseOffcanvas}
+                className="text-red-600 text-lg  font-[family-name:var(--interSemiBold)]"
+              >
+                Close
+              </button>
+            </div>
+            <div className="mt-3">
+              <p className="font-[family-name:var(--interRegular)]">
+                <strong>Full Name:</strong> {selectedUser.username}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Email:</strong> {selectedUser.email}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Phone:</strong> {selectedUser.phone}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Address:</strong> {selectedUser.address}
+              </p>
+
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Branch Name:</strong> {selectedUser.branchName}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Account Name:</strong> {selectedUser.accountHolderName}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>IFSCNO:</strong> {selectedUser.IFSCNO}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
