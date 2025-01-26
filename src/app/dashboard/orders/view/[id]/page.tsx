@@ -260,12 +260,12 @@ const OrderDetailsPage = () => {
           </p>
         </div>
         <div className="mt-4">
-          {/* <img
+          <img
             src={product.productImages}
             alt={product.productName}
             className="w-full max-w-sm rounded shadow"
-          /> */}
-          <Image
+          />
+          {/* <Image
             src={product?.productImages}
             alt="Mountains"
             sizes="100vw"
@@ -273,7 +273,7 @@ const OrderDetailsPage = () => {
               width: "100%",
               height: "auto",
             }}
-          />
+          /> */}
         </div>
       </div>
     </div>
