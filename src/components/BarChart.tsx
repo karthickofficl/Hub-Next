@@ -1,3 +1,4 @@
+"use client";
 // components/BarChart.js
 import { Bar } from 'react-chartjs-2';
 import {
