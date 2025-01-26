@@ -89,3 +89,68 @@ export const assignDeliveryPartner = async (hubuserId: string, subscriptionId: s
     throw error; // Rethrow for further handling
   }
 };
+
+// single data get
+export const getSubscriptionSingleHistory = async (id:number) => {
+  try {
+    // Access localStorage within the function to ensure it's client-side
+    const token = localStorage.getItem("token");
+    console.log("token", token);
+
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/subscription/getSubscriptionSingleHistory/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("single data", response.data);
+    
+    return response.data; // Ensure this returns an array of users
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error; // Rethrow for further handling
+  }
+};
+
+export const hubChangeDeliveryStatus = async (
+  statusId: number,
+  newStatus: string,
+  subscriptionId: number,
+  userId: number,
+  vacationDate: string,
+  singleProductPrice: string
+) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Authentication token is missing. Please log in.");
+    }
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/vacation/vacationCreate`,
+      {
+        statusId,
+        deliveryStatus: newStatus,
+        subscriptionId,
+        userId,
+        vacationDate,
+        singleProductPrice,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data; // Return the response data to the calling function.
+  } catch (error: any) {
+    console.error("Error in hubChangeDeliveryStatus API:", error.response || error.message || error);
+    throw error; // Rethrow the error for the calling function to handle.
+  }
+};

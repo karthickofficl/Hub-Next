@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { getSubscriptions } from "@/lib/api/subscriptionApi";
 import { Loader } from "@/components/Loader";
+import { useRouter } from "next/navigation";
 
 // interface Subscription {
 //   id: number;
@@ -81,6 +82,11 @@ const OrdersHistory = () => {
 
   console.log("subscription", subscription);
 
+    // Navigation
+    const router = useRouter();
+    const handleViewSubscription = (id: number) => {
+      router.push(`/dashboard/subscriptions/view/${id}`); // Navigate to the order details page
+    };
   return (
     <>
       <div className="flex items-center my-3 gap-2 justify-between">
@@ -156,6 +162,7 @@ const OrdersHistory = () => {
             <th className="py-3 px-2">Product Name</th>
             <th className="py-3 px-2">Status</th>
             <th className="py-3 px-2">Total Price</th>
+            <th className="py-3 px-2">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -192,6 +199,28 @@ const OrdersHistory = () => {
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {subscription?.totalPrice}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  <svg
+                    onClick={() => handleViewSubscription(subscription?.id)}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6 cursor-pointer"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                  </svg>
                 </td>
               </tr>
             ))
