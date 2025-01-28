@@ -2,29 +2,30 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { getUsers, getSingleUsers } from "@/lib/api/userApi";
+import { getAllSalaryRequest, getSingleSalary } from "@/lib/api/salaryRequestApi";
 import { Loader } from "@/components/Loader";
 
-interface User {
+interface Salary {
   id: number;
-  username: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
+  attenanceFees: string;
+  salary: string;
+  petrolAllowance: string;
+  totalSalary: string;
+  deliveryuserId: number;
+  driverID: string;
+  month: string;
+  isCompleted: boolean;
+  year: string;
 }
-
 const PaymentRequest = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [salary, setSalary] = useState<Salary[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const [driverID, setDriverID] = useState<string>("");
+  const [month, setMonth] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null); // For offcanvas
+  const [selectedUser, setSelectedUser] = useState<Salary | null>(null); // For offcanvas
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState<boolean>(false);
 
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
@@ -34,30 +35,30 @@ const PaymentRequest = () => {
   );
   const hubuserId = hubuserIdSplit?.id;
 
-  const fetchUsers = useCallback(async () => {
+  const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getUsers(
+      const data = await getAllSalaryRequest(
         hubuserId,
-        username,
-        email,
+        driverID,
+        month,
         page.toString(),
         limit.toString()
       );
-      setUsers(data?.users || []);
+      setSalary(data?.salary || []);
       setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, username, email, page, limit]);
+  }, [hubuserId, driverID, month, page, limit]);
 
-  const fetchSingleUser = async (userId: number) => {
+  const fetchSingleSalary = async (id: number) => {
     try {
       setLoading(true);
-      const user = await getSingleUsers(userId);
-      setSelectedUser(user);
+      const salary = await getSingleSalary(id);
+      setSelectedUser(salary);
       setIsOffcanvasOpen(true); // Open the offcanvas
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -67,8 +68,8 @@ const PaymentRequest = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchRequests();
+  }, [fetchRequests]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -77,10 +78,10 @@ const PaymentRequest = () => {
   };
 
   const handleRefresh = () => {
-    setUsername("");
-    setEmail("");
+    setDriverID("");
+    setMonth("");
     setPage(1);
-    fetchUsers();
+    fetchRequests();
   };
 
   const handleCloseOffcanvas = () => {
@@ -104,8 +105,8 @@ const PaymentRequest = () => {
             <input
               type="search"
               placeholder="Delivery User ID"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={driverID}
+              onChange={(e) => setDriverID(e.target.value)}
               className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
           </div>
@@ -114,8 +115,8 @@ const PaymentRequest = () => {
             <input
               type="email"
               placeholder="Name"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
               className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
           </div>
@@ -174,11 +175,12 @@ const PaymentRequest = () => {
           <tr className="bg-green-950 text-white rounded-xl border font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
             <th className="py-3 px-2">Driver ID</th>
-            <th className="py-3 px-2">Driver Name</th>
-            <th className="py-3 px-2">Phone</th>
-            <th className="py-3 px-2">Amount</th>
+            <th className="py-3 px-2">Attenance Fees</th>
+            <th className="py-3 px-2">Salary</th>
+            <th className="py-3 px-2">Petrol Allowance</th>
             <th className="py-3 px-2">Month</th>
-            <th className="py-3 px-2">Payment Status</th>
+            <th className="py-3 px-2">Year</th>
+            <th className="py-3 px-2">Status</th>
             <th className="py-3 px-2">Action</th>
           </tr>
         </thead>
@@ -189,48 +191,45 @@ const PaymentRequest = () => {
                 <Loader />
               </td>
             </tr>
-          ) : users.length === 0 ? (
+          ) : salary.length === 0 ? (
             <tr>
               <td colSpan={6} className="text-center p-4">
                 No users found.
               </td>
             </tr>
           ) : (
-            users.map((user, index) => (
+            salary.map((requestsalary, index) => (
               <tr
-                key={user.id}
+                key={requestsalary.id}
                 className="hover:bg-green-100 cursor-pointer border-y"
               >
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   {index + 1 + (page - 1) * limit}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  AGM123
-                  {/* {user.username} */}
+                  {requestsalary.driverID}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  Fazil
-                  {/* {user.email} */}
+                  {requestsalary.attenanceFees}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  +91 646436346
-                  {/* {user.phone} */}
+                  {requestsalary.salary}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  $ 12,000
-                  {/* {user.address} */}
+                  {requestsalary.petrolAllowance}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  Jan
-                  {/* {user.address} */}
+                  {requestsalary.month}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  Pending
-                  {/* {user.address} */}
+                  {requestsalary.year}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  {requestsalary.isCompleted}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   <svg
-                    // onClick={() => fetchSingleUser(user.id)}
+                    onClick={() => fetchSingleSalary(requestsalary.id)}
 
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -311,7 +310,7 @@ const PaymentRequest = () => {
           <div className="p-4">
             <div className="flex items-center justify-between bg-green-950 px-3 py-2">
               <h3 className="text-white font-bold text-lg  font-[family-name:var(--interSemiBold)]">
-                User Details
+                Salary Details
               </h3>
               <button
                 onClick={handleCloseOffcanvas}
@@ -322,31 +321,31 @@ const PaymentRequest = () => {
             </div>
             <div className="mt-3">
               <p className="font-[family-name:var(--interRegular)]">
-                <strong>Full Name:</strong> {selectedUser.username}
+                <strong>driverID:</strong> {selectedUser.driverID}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Email:</strong> {selectedUser.email}
+                <strong>Attenance Fees:</strong> {selectedUser.attenanceFees}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Phone:</strong> {selectedUser.phone}
+                <strong>Salary:</strong> {selectedUser.salary}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Address:</strong> {selectedUser.address}
+                <strong>Petrol Allowance:</strong> {selectedUser.petrolAllowance}
               </p>
 
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>City:</strong> {selectedUser.city}
+                <strong>Total:</strong> {selectedUser.totalSalary}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>State:</strong> {selectedUser.state}
+                <strong>Month:</strong> {selectedUser.month}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Pincode:</strong> {selectedUser.pincode}
+                <strong>Year:</strong> {selectedUser.year}
               </p>
             </div>
           </div>
         </div>
-      )}
+      )};
 
       {/* Popup */}
       {isPopupOpen && (
@@ -363,7 +362,7 @@ const PaymentRequest = () => {
               <button className="bg-red-600 text-white rounded px-4 py-2">
                 Cancel
               </button>
-              <button className="bg-green-950 text-white rounded px-4 py-2"></button>
+              <button className="bg-green-950 text-white rounded px-4 py-2">Create</button>
             </div>
           </div>
         </div>
