@@ -6,9 +6,10 @@ import {
   getUnassignedSubscription,
   getAllDeliveryUsersHubDropdown,
   assignDeliveryPartner,
+  assignDeliveryOrders,
 } from "@/lib/api/subscriptionApi";
 import { Loader } from "@/components/Loader";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 interface Product {
   id: number;
@@ -24,6 +25,8 @@ interface Subscription {
   startDate: string;
   status: string;
   totalPrice: string;
+  productId: number;
+  quantity: string;
   product: Product;
   deliveryuserId: null;
 }
@@ -123,8 +126,22 @@ const SubscriptionAssign = () => {
       return;
     }
 
+    // Find the matching order using selectedAssignedId
+    const matchedOrder = subscriptions.find(
+      (subscription) =>
+        subscription.subscriptionOrderId === selectedSubscription.subscriptionOrderId
+    );
+
+    if (!matchedOrder) {
+      setPopupError("Order details not found. Please try again.");
+      return;
+    }
+
     setAssignLoading(true);
     setPopupError(null);
+
+    // Get today's date
+    const today = new Date().toISOString().split("T")[0];
 
     try {
       await assignDeliveryPartner(
@@ -133,6 +150,19 @@ const SubscriptionAssign = () => {
         selectedSubscription.subscriptionOrderId,
         selectedSubscription.startDate,
         selectedUser.toString()
+      );
+
+      // Then, assign the delivery order
+      await assignDeliveryOrders(
+        today, // Today's date
+        false, // isDelivered
+        "", // Description
+        selectedSubscription.subscriptionOrderId, // Assigned order ID
+        selectedUser.toString(), // Delivery user ID
+        "Subscription",
+        matchedOrder.productId, // Product ID
+        matchedOrder.quantity,
+        hubuserId // Quantity (parsed from stockQty)
       );
 
       // alert("Subscription assigned successfully!");

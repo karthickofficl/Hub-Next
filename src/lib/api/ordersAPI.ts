@@ -156,7 +156,7 @@ export const assignDeliveryOrders = async (
         flag,
         productId,
         quantity,
-        hubuserId
+        hubuserId,
       },
       {
         headers: {
