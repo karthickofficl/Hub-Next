@@ -6,9 +6,10 @@ import {
   getUnassignedCheckout,
   getAllDeliveryUsersHubDropdown,
   assignDeliveryPartner,
+  assignDeliveryOrders,
 } from "@/lib/api/ordersAPI";
 import { Loader } from "@/components/Loader";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 interface Product {
   id: number;
@@ -24,6 +25,8 @@ interface Order {
   status: string;
   totalPrice: string;
   paymentStatus: string;
+  quantity: string;
+  productId: number;
   product: Product;
   deliveryuserId: null | number;
 }
@@ -122,25 +125,85 @@ const OrdersAssign = () => {
     setPopupError(null);
   };
 
+  // OLD BUT GOOD
+  // const handleAssign = async () => {
+  //   if (!selectedUser) {
+  //     setPopupError("Please select a delivery user.");
+  //     return;
+  //   }
+
+  //   setPopupLoading(true);
+  //   setPopupError(null);
+  //   try {
+  //     await assignDeliveryPartner(
+  //       hubuserId,
+  //       selectedCheckoutId!.toString(),
+  //       selectedAssignedId!,
+  //       selectedUser.toString()
+  //     );
+  //     // alert("Checkout assigned successfully!");
+  //     toast.success("Checkout assigned successfully!");
+  //     handleClosePopup();
+  //     fetchOrders();
+  //   } catch (error) {
+  //     console.error("Failed to assign checkout", error);
+  //     setPopupError("Failed to assign checkout. Please try again.");
+  //   } finally {
+  //     setPopupLoading(false);
+  //   }
+  // };
+
+  console.log("orders", orders);
+
   const handleAssign = async () => {
     if (!selectedUser) {
       setPopupError("Please select a delivery user.");
       return;
     }
 
+    // Find the matching order using selectedAssignedId
+    const matchedOrder = orders.find(
+      (order) => order.orderId === selectedAssignedId
+    );
+
+    if (!matchedOrder) {
+      setPopupError("Order details not found. Please try again.");
+      return;
+    }
+
+    // const { product } = matchedOrder; // Get product details from the matched order
+
     setPopupLoading(true);
     setPopupError(null);
+
+    // Get today's date
+    const today = new Date().toISOString().split("T")[0];
+
     try {
+      // First, assign the delivery partner
       await assignDeliveryPartner(
         hubuserId,
         selectedCheckoutId!.toString(),
         selectedAssignedId!,
         selectedUser.toString()
       );
-      // alert("Checkout assigned successfully!");
+
+      // Then, assign the delivery order
+      await assignDeliveryOrders(
+        today, // Today's date
+        false, // isDelivered
+        "", // Description
+        selectedAssignedId!, // Assigned order ID
+        selectedUser.toString(), // Delivery user ID
+        "Order",
+        matchedOrder.productId, // Product ID
+        matchedOrder.quantity,
+        hubuserId, // Quantity (parsed from stockQty)
+      );
+
       toast.success("Checkout assigned successfully!");
       handleClosePopup();
-      fetchOrders();
+      fetchOrders(); // Refresh orders after successful assignment
     } catch (error) {
       console.error("Failed to assign checkout", error);
       setPopupError("Failed to assign checkout. Please try again.");

@@ -1,6 +1,12 @@
 import axios from "axios";
 // Orders API Handler
-export const getCheckout = async (hubuserId: string, productName: string, orderId: string, page: string, limit: string) => {
+export const getCheckout = async (
+  hubuserId: string,
+  productName: string,
+  orderId: string,
+  page: string,
+  limit: string
+) => {
   try {
     // Access localStorage within the function to ensure it's client-side
     const token = localStorage.getItem("token");
@@ -16,14 +22,20 @@ export const getCheckout = async (hubuserId: string, productName: string, orderI
       }
     );
     console.log("checkout response", response.data);
-    return response.data; // Ensure this returns an array of users 
+    return response.data; // Ensure this returns an array of users
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error; // Rethrow for further handling
   }
 };
 
-export const getUnassignedCheckout = async (hubuserId: string, productName: string, orderId: string, page: string, limit: string) => {
+export const getUnassignedCheckout = async (
+  hubuserId: string,
+  productName: string,
+  orderId: string,
+  page: string,
+  limit: string
+) => {
   try {
     // Access localStorage within the function to ensure it's client-side
     const token = localStorage.getItem("token");
@@ -39,7 +51,7 @@ export const getUnassignedCheckout = async (hubuserId: string, productName: stri
       }
     );
     console.log("checkout response", response.data);
-    return response.data; // Ensure this returns an array of users 
+    return response.data; // Ensure this returns an array of users
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error; // Rethrow for further handling
@@ -68,7 +80,12 @@ export const getAllDeliveryUsersHubDropdown = async (hubuserId: string) => {
   }
 };
 
-export const assignDeliveryPartner = async (hubuserId: string, checkOutId: string, assignedIds:string, deliveryuserId: string) => {
+export const assignDeliveryPartner = async (
+  hubuserId: string,
+  checkOutId: string,
+  assignedIds: string,
+  deliveryuserId: string
+) => {
   try {
     // Access localStorage within the function to ensure it's client-side
     const token = localStorage.getItem("token");
@@ -76,7 +93,7 @@ export const assignDeliveryPartner = async (hubuserId: string, checkOutId: strin
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/assign/assignCheckoutHubToDeliveryPartner`,
-      {hubuserId, checkOutId, assignedIds, deliveryuserId},
+      { hubuserId, checkOutId, assignedIds, deliveryuserId },
       {
         headers: {
           "Content-Type": "application/json",
@@ -107,9 +124,50 @@ export const getSingleCheckout = async (id: number) => {
       }
     );
     console.log("checkout response", response.data);
-    return response.data; // Ensure this returns an array of users 
+    return response.data; // Ensure this returns an array of users
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error; // Rethrow for further handling
+  }
+};
+
+export const assignDeliveryOrders = async (
+  deliveryDay: string,
+  isDelivered: boolean,
+  description: string,
+  assignedIds: string,
+  deliveryuserId: string,
+  flag: string,
+  productId: number,
+  quantity: string,
+  hubuserId: number
+) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/delivery/order/productAssignToDelivery`,
+      {
+        deliveryDay,
+        isDelivered,
+        description,
+        assignedIds,
+        deliveryuserId,
+        flag,
+        productId,
+        quantity,
+        hubuserId
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error in assignDeliveryOrders:", error);
+    throw error;
   }
 };
