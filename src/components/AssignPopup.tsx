@@ -1,3 +1,4 @@
+"use client"; // Add this at the top
 import React, { useState } from "react";
 import { assignDeliveryPartner, getUnassignedCheckout } from "@/lib/api/ordersAPI";
 

@@ -4,7 +4,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 // import { Loader } from "@/components/Loader";
 import BarChart from "@/components/BarChart";
-import {getUsersCount, getDeliveryUsersCount, getOrdersCount, getSubscriptionCount} from "@/lib/api/dashboardApi"
+import {
+  getUsersCount,
+  getDeliveryUsersCount,
+  getOrdersCount,
+  getSubscriptionCount,
+} from "@/lib/api/dashboardApi";
 
 interface User {
   usersCount: number;
@@ -91,7 +96,7 @@ const Dashboard = () => {
   }, [fetchUsers, fetchDeliveryUsers, fetchOrders, fetchSubscriptions]);
 
   console.log("users", users);
-  
+
   return (
     <>
       <div className="grid grid-cols-4 gap-4">
@@ -114,10 +119,10 @@ const Dashboard = () => {
             </svg>
 
             <h1 className="font-semibold font-[family-name:var(--interSemiBold)] pt-2">
-            Total Users
+              Total Users
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-            {users ? users.usersCount : 0} {/* Default to 0 if null */}
+              {users ? users.usersCount : 0} {/* Default to 0 if null */}
             </h5>
           </div>
         </div>
@@ -139,10 +144,10 @@ const Dashboard = () => {
             </svg>
 
             <h1 className="font-semibold font-[family-name:var(--interSemiBold)] pt-2">
-            Total Orders
+              Total Orders
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-            {orders ? orders.checkOutCount : 0} {/* Default to 0 if null */}
+              {orders ? orders.checkOutCount : 0} {/* Default to 0 if null */}
             </h5>
           </div>
         </div>
@@ -164,10 +169,10 @@ const Dashboard = () => {
             </svg>
 
             <h1 className="font-semibold font-[family-name:var(--interSemiBold)] pt-2">
-            Total  Delivery Persons
+              Total Delivery Persons
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-            {deliveryUsers ? deliveryUsers.deliveryUserCount : 0}
+              {deliveryUsers ? deliveryUsers.deliveryUserCount : 0}
             </h5>
           </div>
         </div>
@@ -189,14 +194,13 @@ const Dashboard = () => {
             </svg>
 
             <h1 className="font-semibold font-[family-name:var(--interSemiBold)] pt-2">
-            Total Subscription 
+              Total Subscription
             </h1>
             <h5 className="font-regular font-[family-name:var(--interRegular)] pt-2">
-            {Subscriptions ? Subscriptions.subscriptionCount : 0}
+              {Subscriptions ? Subscriptions.subscriptionCount : 0}
             </h5>
           </div>
         </div>
-        
       </div>
       <div className="flex items-center justify-center">
         <div className="mt-3 w-9/12 font-[family-name:var(--interRegular)]">

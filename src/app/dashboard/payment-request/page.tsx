@@ -2,9 +2,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { getAllSalaryRequest, getSingleSalary } from "@/lib/api/salaryRequestApi";
+import {
+  getAllSalaryRequest,
+  getSingleSalary,
+  postSalaryRequest,
+} from "@/lib/api/salaryRequestApi";
+import { getSingleDeliveryUserDriverID } from "@/lib/api/deliveryUserApi";
 import { Loader } from "@/components/Loader";
-
+import { toast } from "react-toastify";
 interface Salary {
   id: number;
   attenanceFees: string;
@@ -12,15 +17,27 @@ interface Salary {
   petrolAllowance: string;
   totalSalary: string;
   deliveryuserId: number;
-  driverID: string;
+  deliveryAutoID: string;
   month: string;
   isCompleted: boolean;
   year: string;
 }
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  phone: string;
+  address: string;
+  branchName: string;
+  accountHolderName: string;
+  accountNo: string;
+  IFSCNO: string;
+  deliveryAutoID: string;
+}
 const PaymentRequest = () => {
   const [salary, setSalary] = useState<Salary[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [driverID, setDriverID] = useState<string>("");
+  const [deliveryAutoID, setDeliveryAutoID] = useState<string>("");
   const [month, setMonth] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
@@ -28,7 +45,7 @@ const PaymentRequest = () => {
   const [selectedUser, setSelectedUser] = useState<Salary | null>(null); // For offcanvas
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState<boolean>(false);
 
-  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(true);
 
   const hubuserIdSplit = useSelector(
     (state: RootState) => state.auth.existingUser
@@ -40,7 +57,7 @@ const PaymentRequest = () => {
     try {
       const data = await getAllSalaryRequest(
         hubuserId,
-        driverID,
+        deliveryAutoID,
         month,
         page.toString(),
         limit.toString()
@@ -52,7 +69,7 @@ const PaymentRequest = () => {
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, driverID, month, page, limit]);
+  }, [hubuserId, deliveryAutoID, month, page, limit]);
 
   const fetchSingleSalary = async (id: number) => {
     try {
@@ -78,7 +95,7 @@ const PaymentRequest = () => {
   };
 
   const handleRefresh = () => {
-    setDriverID("");
+    setDeliveryAutoID("");
     setMonth("");
     setPage(1);
     fetchRequests();
@@ -92,6 +109,90 @@ const PaymentRequest = () => {
   const handleOpenPopup = () => {
     setIsPopupOpen(true);
   };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+  const [deliveryAutoIDInput, setDeliveryAutoIDInput] = useState("");
+  const [userData, setUserData] = useState({
+    id: "",
+    email: "",
+    name: "",
+    address: "",
+  });
+
+  const [attendanceFees, setAttendanceFees] = useState("");
+  const [salaryInput, setSalaryInput] = useState("");
+  const [petrolAllowance, setPetrolAllowance] = useState("");
+  const [totalCost, setTotalCost] = useState(0);
+  const [requestDate, setRequestDate] = useState("");
+
+  // const [isModalOpen, setIsModalOpen] = useState(true);
+
+  // const closeModal = () => {
+  //   setIsModalOpen(false); // Close the modal
+  // };
+
+  
+  const fetchUserDetails = async () => {
+    try {
+      // Replace with actual hub user ID
+      const data = await getSingleDeliveryUserDriverID(
+        hubuserId,
+        deliveryAutoIDInput
+      );
+
+      if (data) {
+        setUserData({
+          id: data.id,
+          email: data.email || "",
+          name: data.name || "",
+          address: data.address || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+
+  const calculateTotalCost = () => {
+    const total =
+      (Number(attendanceFees) || 0) +
+      (Number(salaryInput) || 0) +
+      (Number(petrolAllowance) || 0);
+    setTotalCost(total);
+  };
+
+  const handleSubmit = async () => {
+    const months = "Jan";
+    try {
+      // Call API and store response
+      const responseData = await postSalaryRequest(
+        attendanceFees, // 1st argument (string)
+        salaryInput, // 2nd argument (string)
+        petrolAllowance, // 3rd argument (string)
+        totalCost, // 4th argument (string)
+        months, // 5th argument (string)
+        requestDate, // 6th argument (string)
+        userData.id, // 7th argument (number)
+        deliveryAutoIDInput, // 8th argument (string)
+        hubuserId // 9th argument (number)
+      );
+  
+      // Check if API call was successful (assuming responseData is valid when successful)
+      if (responseData) {
+        toast.success("Salary request created successfully", { position: "top-right" });
+        setIsPopupOpen(false); // Close popup
+      } else {
+        toast.error("Failed to create salary request. Please try again.", { position: "top-right" });
+      }
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      toast.error("Error creating salary request", { position: "top-right" });
+    }
+  };
+  
+  
   return (
     <>
       <div className="flex items-center my-3 gap-2 justify-end">
@@ -105,8 +206,8 @@ const PaymentRequest = () => {
             <input
               type="search"
               placeholder="Delivery User ID"
-              value={driverID}
-              onChange={(e) => setDriverID(e.target.value)}
+              value={deliveryAutoID}
+              onChange={(e) => setDeliveryAutoID(e.target.value)}
               className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
           </div>
@@ -169,7 +270,6 @@ const PaymentRequest = () => {
           </div>
         </div>
       </div>
-
       <table className="table-auto w-full border-spacing-2 p-4 border bg-white rounded-xl">
         <thead className="text-left font-semibold">
           <tr className="bg-green-950 text-white rounded-xl border font-[family-name:var(--interSemiBold)]">
@@ -207,7 +307,7 @@ const PaymentRequest = () => {
                   {index + 1 + (page - 1) * limit}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  {requestsalary.driverID}
+                  {requestsalary.deliveryAutoID}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   {requestsalary.attenanceFees}
@@ -230,7 +330,6 @@ const PaymentRequest = () => {
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   <svg
                     onClick={() => fetchSingleSalary(requestsalary.id)}
-
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -255,7 +354,6 @@ const PaymentRequest = () => {
           )}
         </tbody>
       </table>
-
       <div className="flex justify-center items-center mt-4">
         <button
           onClick={() => handlePageChange(page - 1)}
@@ -303,7 +401,6 @@ const PaymentRequest = () => {
           </svg>
         </button>
       </div>
-
       {/* Offcanvas for User Details */}
       {isOffcanvasOpen && selectedUser && (
         <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg z-50 overflow-auto">
@@ -321,7 +418,7 @@ const PaymentRequest = () => {
             </div>
             <div className="mt-3">
               <p className="font-[family-name:var(--interRegular)]">
-                <strong>driverID:</strong> {selectedUser.driverID}
+                <strong>driverID:</strong> {selectedUser.deliveryAutoID}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
                 <strong>Attenance Fees:</strong> {selectedUser.attenanceFees}
@@ -330,7 +427,8 @@ const PaymentRequest = () => {
                 <strong>Salary:</strong> {selectedUser.salary}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Petrol Allowance:</strong> {selectedUser.petrolAllowance}
+                <strong>Petrol Allowance:</strong>{" "}
+                {selectedUser.petrolAllowance}
               </p>
 
               <p className="font-[family-name:var(--interRegular)] mt-2">
@@ -345,24 +443,114 @@ const PaymentRequest = () => {
             </div>
           </div>
         </div>
-      )};
-
-      {/* Popup */}
+      )}
+      ;{/* Popup */}
       {isPopupOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-xl">
-            <h2 className="text-xl font-semibold mb-4 font-[family-name:var(--interSemiBold)]">
+            <h2 className="text-xl font-semibold mb-4">
               Assign Delivery Partner
             </h2>
-            <select className="block w-full p-2 border rounded-md mb-4 font-[family-name:var(--interRegular)]">
-              <option value="">Select Delivery User</option>
-              <option value="">Select Delivery User</option>
-            </select>
+
+            {/* Search by Delivery Auto ID */}
+            <div className="w-full mb-2">
+              <input
+                type="search"
+                placeholder="Type Delivery User ID"
+                value={deliveryAutoIDInput}
+                onChange={(e) => setDeliveryAutoIDInput(e.target.value)}
+                className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={fetchUserDetails}
+              className="bg-blue-600 text-white rounded px-4 py-2 mb-4"
+            >
+              Submit
+            </button>
+
+            {/* Display fetched user data */}
+            <div className="grid grid-cols-2 gap-2">
+              <p className="my-2">Email: {userData.email}</p>
+              <p className="my-2">Name: {userData.name}</p>
+              <p className="my-2">Address: {userData.address}</p>
+            </div>
+
+            {/* Salary Inputs */}
+            <div className="w-full mb-2">
+              <input
+                type="number"
+                placeholder="Attendance Fees"
+                value={attendanceFees}
+                onChange={(e) => {
+                  setAttendanceFees(e.target.value);
+                  calculateTotalCost();
+                }}
+                className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
+              />
+            </div>
+            <div className="w-full mb-2">
+              <input
+                type="number"
+                placeholder="Salary"
+                value={salaryInput}
+                onChange={(e) => {
+                  setSalaryInput(e.target.value);
+                  calculateTotalCost();
+                }}
+                className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
+              />
+            </div>
+            <div className="w-full mb-2">
+              <input
+                type="number"
+                placeholder="Petrol Allowance"
+                value={petrolAllowance}
+                onChange={(e) => {
+                  setPetrolAllowance(e.target.value);
+                  calculateTotalCost();
+                }}
+                className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
+              />
+            </div>
+
+            {/* Total Cost (Readonly) */}
+            <div className="w-full mb-2">
+              <input
+                type="text"
+                placeholder="Total Cost"
+                value={totalCost}
+                readOnly
+                className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
+              />
+            </div>
+
+            {/* Date Input */}
+            <div className="w-full mb-2">
+              <input
+                type="date"
+                value={requestDate}
+                onChange={(e) => setRequestDate(e.target.value)}
+                className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
+              />
+            </div>
+
+            {/* Action Buttons */}
             <div className="flex justify-end space-x-4">
-              <button className="bg-red-600 text-white rounded px-4 py-2">
+              <button
+                // onClick={closeModal}
+                onClick={() => handleClosePopup()}
+                className="bg-red-600 text-white rounded px-4 py-2"
+              >
                 Cancel
               </button>
-              <button className="bg-green-950 text-white rounded px-4 py-2">Create</button>
+              <button
+                onClick={handleSubmit}
+                className="bg-green-950 text-white rounded px-4 py-2"
+              >
+                Create
+              </button>
             </div>
           </div>
         </div>

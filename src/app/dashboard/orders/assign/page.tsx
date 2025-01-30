@@ -25,12 +25,12 @@ interface Order {
   status: string;
   totalPrice: string;
   paymentStatus: string;
+  paymentId: string;
   quantity: string;
   productId: number;
-  product: Product;
+  product: Product[]; // <== Array of products
   deliveryuserId: null | number;
 }
-
 interface DeliveryPartner {
   id: number;
   username: string;
@@ -124,35 +124,7 @@ const OrdersAssign = () => {
     setSelectedUser(null);
     setPopupError(null);
   };
-
-  // OLD BUT GOOD
-  // const handleAssign = async () => {
-  //   if (!selectedUser) {
-  //     setPopupError("Please select a delivery user.");
-  //     return;
-  //   }
-
-  //   setPopupLoading(true);
-  //   setPopupError(null);
-  //   try {
-  //     await assignDeliveryPartner(
-  //       hubuserId,
-  //       selectedCheckoutId!.toString(),
-  //       selectedAssignedId!,
-  //       selectedUser.toString()
-  //     );
-  //     // alert("Checkout assigned successfully!");
-  //     toast.success("Checkout assigned successfully!");
-  //     handleClosePopup();
-  //     fetchOrders();
-  //   } catch (error) {
-  //     console.error("Failed to assign checkout", error);
-  //     setPopupError("Failed to assign checkout. Please try again.");
-  //   } finally {
-  //     setPopupLoading(false);
-  //   }
-  // };
-
+  // -----
   console.log("orders", orders);
 
   const handleAssign = async () => {
@@ -165,7 +137,14 @@ const OrdersAssign = () => {
     const matchedOrder = orders.find(
       (order) => order.orderId === selectedAssignedId
     );
+    console.log("matchedOrder", matchedOrder);
 
+    const firstProduct = matchedOrder?.product?.[0]; // Get the first product if available
+
+    if (!firstProduct) {
+      setPopupError("No product details found for this order.");
+      return;
+    }
     if (!matchedOrder) {
       setPopupError("Order details not found. Please try again.");
       return;
@@ -196,9 +175,9 @@ const OrdersAssign = () => {
         selectedAssignedId!, // Assigned order ID
         selectedUser.toString(), // Delivery user ID
         "Order",
-        matchedOrder.productId, // Product ID
-        matchedOrder.quantity,
-        hubuserId, // Quantity (parsed from stockQty)
+        firstProduct.id, // Product ID from the first product in the array
+        matchedOrder.quantity, // Order quantity remains the same
+        hubuserId // Quantity (parsed from stockQty)
       );
 
       toast.success("Checkout assigned successfully!");
@@ -286,7 +265,8 @@ const OrdersAssign = () => {
           <tr className="bg-green-950 text-white font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
             <th className="py-3 px-2">Order ID</th>
-            <th className="py-3 px-2">Product Name</th>
+            <th className="py-3 px-2">Payment Id</th>
+            {/* <th className="py-3 px-2">Product Name</th> */}
             <th className="py-3 px-2">Payment Status</th>
             <th className="py-3 px-2">Total Price</th>
             <th className="py-3 px-2">Assign Status</th>
@@ -319,8 +299,11 @@ const OrdersAssign = () => {
                   {order.orderId}
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
-                  {order.product.productName}
+                  {order.paymentId}
                 </td>
+                {/* <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
+                  {order.product.productName}
+                </td> */}
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   {order.paymentStatus}
                 </td>

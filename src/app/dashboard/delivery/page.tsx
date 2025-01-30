@@ -15,6 +15,7 @@ interface User {
   accountHolderName: string;
   accountNo: string;
   IFSCNO: string;
+  deliveryAutoID: string;
 }
 
 const DeliveryUsersList = () => {
@@ -41,6 +42,7 @@ const DeliveryUsersList = () => {
         hubuserId,
         username,
         email,
+        "",
         page.toString(),
         limit.toString()
       );

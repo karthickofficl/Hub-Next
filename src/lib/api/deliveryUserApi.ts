@@ -1,13 +1,13 @@
 import axios from "axios";
 // Orders API Handler
-export const getUsers = async (hubuserId: string, username: string, email: string, page: string, limit: string) => {
+export const getUsers = async (hubuserId: string, username: string, email: string, deliveryAutoID:string, page: string, limit: string) => {
   try {
     // Access localStorage within the function to ensure it's client-side
     const token = localStorage.getItem("token");
     console.log("token", token);
 
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/delivery/user/getAllDeliveryUsersHub?hubuserId=${hubuserId}&username=${username}&email=${email}&page=${page}&limit=${limit}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/delivery/user/getAllDeliveryUsersHub?hubuserId=${hubuserId}&username=${username}&email=${email}&deliveryAutoID=${deliveryAutoID}&page=${page}&limit=${limit}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -39,6 +39,30 @@ export const getSingleDeliveryUsers = async (id: number) => {
     );
     console.log("Single Delivery user data", response?.data?.existingUser);
     return response?.data?.existingUser; // Ensure this returns an array of users
+    
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error; // Rethrow for further handling
+  }
+};
+
+export const getSingleDeliveryUserDriverID = async (hubuserId: number, deliveryAutoID: string) => {
+  try {
+    // Access localStorage within the function to ensure it's client-side
+    const token = localStorage.getItem("token");
+    console.log("token", token);
+
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/delivery/user/getSingleUserdeliveryAutoID?hubuserId=${hubuserId}&deliveryAutoID=${deliveryAutoID}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("Single Delivery user data", response?.data?.users);
+    return response?.data?.users; // Ensure this returns an array of users
     
   } catch (error) {
     console.error("Error fetching users:", error);

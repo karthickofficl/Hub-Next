@@ -1,3 +1,4 @@
+// "use client"; // Add this at the top
 import React from 'react'
 
 export const Loader = () => {

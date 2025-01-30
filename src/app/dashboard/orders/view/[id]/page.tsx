@@ -18,15 +18,6 @@ interface User {
   pincode: string;
 }
 
-interface Product {
-  id: number;
-  productName: string;
-  productDescription: string;
-  price: string;
-  stockQty: string;
-  productImages: string;
-}
-
 interface Checkout {
   id: number;
   paymentId: string;
@@ -37,8 +28,21 @@ interface Checkout {
   preference: string;
   orderId: string;
   user: User;
-  product: Product;
+  products: Product[]; // <-- Update this from 'product' to 'products'
 }
+
+interface Product {
+  id: number;
+  productName: string;
+  productDescription: string;
+  price: string;
+  stockQty: string;
+  productImages: string;
+  checkoutproduct: {
+    qquantity: number;
+  };
+}
+
 
 const OrderDetailsPage = () => {
   const { id } = useParams(); // Extract the `id` parameter from the URL
@@ -63,38 +67,6 @@ const OrderDetailsPage = () => {
       setLoading(false);
     }
   };
-
-  // const fetchCheckout = async (checkoutId: number) => {
-  //   try {
-  //     setLoading(true);
-  //     setError(null); // Reset error state
-  //     const token = localStorage.getItem("token");
-  //     if (!token) throw new Error("Authentication token is missing.");
-
-  //     console.log("Fetching checkout with ID:", checkoutId);
-  //     const response = await axios.get(
-  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/checkout/getSingleCheckout/${checkoutId}`,
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     if (response.status === 200 && response.data.checkout) {
-  //       setCheckout(response.data.checkout);
-  //     } else {
-  //       setError("Checkout details not found.");
-  //     }
-  //   } catch (error: any) {
-  //     console.error("Error fetching checkout details:", error.message);
-  //     setError(error.message || "Failed to fetch checkout details. Please try again later.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   useEffect(() => {
     if (id) {
       fetchCheckout(Number(id));
@@ -113,7 +85,7 @@ const OrderDetailsPage = () => {
     return <p>Checkout details not found.</p>;
   }
 
-  const { user, product } = checkout;
+  const { user } = checkout;
 
   return (
     <div className="p-4">
@@ -221,60 +193,56 @@ const OrderDetailsPage = () => {
       </div>
 
       {/* Product Details */}
+      {/* Product Details */}
       <div className="bg-white rounded-lg p-5 shadow">
         <h3 className="font-bold text-lg text-green-700 mb-3">
           Product Details
         </h3>
-        <div className="grid grid-cols-2 gap-4">
-          <p>
-            <strong className="font-[family-name:var(--interSemiBold)]">
-              Product Name:
-            </strong>{" "}
-            <span className="font-[family-name:var(--interRegular)]">
-              {product.productName}
-            </span>
-          </p>
-          <p>
-            <strong className="font-[family-name:var(--interSemiBold)]">
-              Price:
-            </strong>{" "}
-            <span className="font-[family-name:var(--interRegular)]">
-              ₹{product.price}
-            </span>
-          </p>
-          <p>
-            <strong className="font-[family-name:var(--interSemiBold)]">
-              Quantity:
-            </strong>{" "}
-            <span className="font-[family-name:var(--interRegular)]">
-              {checkout.quantity}
-            </span>
-          </p>
-          <p>
-            <strong className="font-[family-name:var(--interSemiBold)]">
-              Description:
-            </strong>{" "}
-            <span className="font-[family-name:var(--interRegular)]">
-              {product.productDescription}
-            </span>
-          </p>
-        </div>
-        <div className="mt-4">
-          <img
-            src={product.productImages}
-            alt={product.productName}
-            className="w-full max-w-sm rounded shadow"
-          />
-          {/* <Image
-            src={product?.productImages}
-            alt="Mountains"
-            sizes="100vw"
-            style={{
-              width: "100%",
-              height: "auto",
-            }}
-          /> */}
-        </div>
+        {checkout.products?.map((product) => (
+          <div key={product.id} className="mb-6 border-b pb-4 last:border-b-0">
+            <div className="grid grid-cols-2 gap-4">
+              <p>
+                <strong className="font-[family-name:var(--interSemiBold)]">
+                  Product Name:
+                </strong>{" "}
+                <span className="font-[family-name:var(--interRegular)]">
+                  {product.productName}
+                </span>
+              </p>
+              <p>
+                <strong className="font-[family-name:var(--interSemiBold)]">
+                  Price:
+                </strong>{" "}
+                <span className="font-[family-name:var(--interRegular)]">
+                  ₹{product.price}
+                </span>
+              </p>
+              <p>
+                <strong className="font-[family-name:var(--interSemiBold)]">
+                  Quantity:
+                </strong>{" "}
+                <span className="font-[family-name:var(--interRegular)]">
+                  {product.checkoutproduct.qquantity}
+                </span>
+              </p>
+              <p>
+                <strong className="font-[family-name:var(--interSemiBold)]">
+                  Description:
+                </strong>{" "}
+                <span className="font-[family-name:var(--interRegular)]">
+                  {product.productDescription}
+                </span>
+              </p>
+            </div>
+            <div className="mt-4">
+              <img
+                src={product.productImages}
+                alt={product.productName}
+                className="w-40 h-40 max-w-sm rounded shadow"
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
