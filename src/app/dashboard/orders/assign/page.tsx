@@ -52,7 +52,11 @@ const OrdersAssign = () => {
   const [selectedCheckoutId, setSelectedCheckoutId] = useState<number | null>(
     null
   );
-  const [selectedAssignedId, setSelectedAssignedId] = useState<string | null>(
+  // const [selectedAssignedId, setSelectedAssignedId] = useState<string | null>(
+  //   null
+  // );
+
+  const [selectedDeliveryOrderId, setSelectedDeliveryOrderId] = useState<number | null>(
     null
   );
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
@@ -111,20 +115,23 @@ const OrdersAssign = () => {
     fetchOrders();
   };
 
-  const handleOpenPopup = (checkoutId: number, assignedIds: string) => {
+  // const handleOpenPopup = (checkoutId: number, assignedIds: string) => {
+  const handleOpenPopup = (checkoutId: number) => {
     setSelectedCheckoutId(checkoutId);
-    setSelectedAssignedId(assignedIds);
+    setSelectedDeliveryOrderId(checkoutId);
+    // setSelectedAssignedId(assignedIds);
     setIsPopupOpen(true);
   };
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     setSelectedCheckoutId(null);
-    setSelectedAssignedId(null);
+    // setSelectedAssignedId(null);
+    setSelectedDeliveryOrderId(null);
     setSelectedUser(null);
     setPopupError(null);
   };
-  // -----
+  // -------------------------------
   console.log("orders", orders);
 
   const handleAssign = async () => {
@@ -134,21 +141,21 @@ const OrdersAssign = () => {
     }
 
     // Find the matching order using selectedAssignedId
-    const matchedOrder = orders.find(
-      (order) => order.orderId === selectedAssignedId
-    );
-    console.log("matchedOrder", matchedOrder);
+    // const matchedOrder = orders.find(
+    //   (order) => order.orderId === selectedAssignedId
+    // );
+    // console.log("matchedOrder", matchedOrder);
 
-    const firstProduct = matchedOrder?.product?.[0]; // Get the first product if available
+    // const firstProduct = matchedOrder?.product?.[0]; // Get the first product if available
 
-    if (!firstProduct) {
-      setPopupError("No product details found for this order.");
-      return;
-    }
-    if (!matchedOrder) {
-      setPopupError("Order details not found. Please try again.");
-      return;
-    }
+    // if (!firstProduct) {
+    //   setPopupError("No product details found for this order.");
+    //   return;
+    // }
+    // if (!matchedOrder) {
+    //   setPopupError("Order details not found. Please try again.");
+    //   return;
+    // }
 
     // const { product } = matchedOrder; // Get product details from the matched order
 
@@ -157,28 +164,28 @@ const OrdersAssign = () => {
 
     // Get today's date
     const today = new Date().toISOString().split("T")[0];
-
     try {
       // First, assign the delivery partner
       await assignDeliveryPartner(
         hubuserId,
         selectedCheckoutId!.toString(),
-        selectedAssignedId!,
+        // selectedAssignedId!,
+        selectedDeliveryOrderId!.toString(),
         selectedUser.toString()
       );
 
       // Then, assign the delivery order
-      await assignDeliveryOrders(
-        today, // Today's date
-        false, // isDelivered
-        "", // Description
-        selectedAssignedId!, // Assigned order ID
-        selectedUser.toString(), // Delivery user ID
-        "Order",
-        firstProduct.id, // Product ID from the first product in the array
-        matchedOrder.quantity, // Order quantity remains the same
-        hubuserId // Quantity (parsed from stockQty)
-      );
+      // await assignDeliveryOrders(
+      //   today, // Today's date
+      //   false, // isDelivered
+      //   "", // Description
+      //   selectedAssignedId!, // Assigned order ID
+      //   selectedUser.toString(), // Delivery user ID
+      //   "Order",
+      //   firstProduct.id, // Product ID from the first product in the array
+      //   matchedOrder.quantity, // Order quantity remains the same
+      //   hubuserId // Quantity (parsed from stockQty)
+      // );
 
       toast.success("Checkout assigned successfully!");
       handleClosePopup();
@@ -315,7 +322,7 @@ const OrdersAssign = () => {
                 </td>
                 <td className="font-[family-name:var(--interRegular)]  py-3 px-2">
                   <button
-                    onClick={() => handleOpenPopup(order.id, order.orderId)}
+                    onClick={() => handleOpenPopup(order.id)}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

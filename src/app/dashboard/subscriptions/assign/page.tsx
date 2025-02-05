@@ -102,42 +102,48 @@ const SubscriptionAssign = () => {
 
   // Popup State Management
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedSubscription, setSelectedSubscription] =
-    useState<Subscription | null>(null);
+  const [selectedSubscriptionId, setSelectedSubscriptionId] =
+    useState<number | null>(null);
+    const [selectedDeliveryOrderId, setSelectedDeliveryOrderId] = useState<number | null>(
+      null
+    );
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [popupError, setPopupError] = useState<string | null>(null);
-  const [assignLoading, setAssignLoading] = useState(false);
+  const [popupLoading, setPopupLoading] = useState(false);
+  // const [assignLoading, setAssignLoading] = useState(false);
 
-  const handleOpenPopup = (subscription: Subscription) => {
-    setSelectedSubscription(subscription);
+  const handleOpenPopup = (subscriptionId: number) => {
+    setSelectedSubscriptionId(subscriptionId);
+    setSelectedDeliveryOrderId(subscriptionId);
     setIsPopupOpen(true);
   };
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
-    setSelectedSubscription(null);
+    setSelectedSubscriptionId(null);
+    setSelectedDeliveryOrderId(null);
     setSelectedUser(null);
     setPopupError(null);
   };
 
   const handleAssign = async () => {
-    if (!selectedUser || !selectedSubscription) {
+    if (!selectedUser) {
       setPopupError("Please select a delivery user.");
       return;
     }
 
     // Find the matching order using selectedAssignedId
-    const matchedOrder = subscriptions.find(
-      (subscription) =>
-        subscription.subscriptionOrderId === selectedSubscription.subscriptionOrderId
-    );
+    // const matchedOrder = subscriptions.find(
+    //   (subscription) =>
+    //     subscription.subscriptionOrderId === selectedSubscription.subscriptionOrderId
+    // );
 
-    if (!matchedOrder) {
-      setPopupError("Order details not found. Please try again.");
-      return;
-    }
+    // if (!matchedOrder) {
+    //   setPopupError("Order details not found. Please try again.");
+    //   return;
+    // }
 
-    setAssignLoading(true);
+    setPopupLoading(true);
     setPopupError(null);
 
     // Get today's date
@@ -146,24 +152,23 @@ const SubscriptionAssign = () => {
     try {
       await assignDeliveryPartner(
         hubuserId,
-        selectedSubscription.id.toString(),
-        selectedSubscription.subscriptionOrderId,
-        selectedSubscription.startDate,
+        selectedSubscriptionId!.toString(),
+        selectedDeliveryOrderId!.toString(),
         selectedUser.toString()
       );
 
       // Then, assign the delivery order
-      await assignDeliveryOrders(
-        today, // Today's date
-        false, // isDelivered
-        "", // Description
-        selectedSubscription.subscriptionOrderId, // Assigned order ID
-        selectedUser.toString(), // Delivery user ID
-        "Subscription",
-        matchedOrder.productId, // Product ID
-        matchedOrder.quantity,
-        hubuserId // Quantity (parsed from stockQty)
-      );
+      // await assignDeliveryOrders(
+      //   today, // Today's date
+      //   false, // isDelivered
+      //   "", // Description
+      //   selectedSubscription.subscriptionOrderId, // Assigned order ID
+      //   selectedUser.toString(), // Delivery user ID
+      //   "Subscription",
+      //   matchedOrder.productId, // Product ID
+      //   matchedOrder.quantity,
+      //   hubuserId // Quantity (parsed from stockQty)
+      // );
 
       // alert("Subscription assigned successfully!");
       toast.success("Subscription assigned successfully!");
@@ -173,7 +178,7 @@ const SubscriptionAssign = () => {
       console.error("Failed to assign subscription", err);
       setPopupError("Failed to assign subscription. Please try again.");
     } finally {
-      setAssignLoading(false);
+      setPopupLoading(false);
     }
   };
 
@@ -297,7 +302,7 @@ const SubscriptionAssign = () => {
                   >
                     Assign
                   </button> */}
-                  <button onClick={() => handleOpenPopup(subscription)}>
+                  <button onClick={() => handleOpenPopup(subscription.id)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -372,7 +377,7 @@ const SubscriptionAssign = () => {
                 onClick={handleAssign}
                 className="bg-green-950 text-white rounded px-4 py-2"
               >
-                {assignLoading ? "Assigning..." : "Assign"}
+                {popupLoading ? "Assigning..." : "Assign"}
               </button>
             </div>
           </div>

@@ -82,8 +82,7 @@ export const getAllDeliveryUsersHubDropdown = async (hubuserId: string) => {
 export const assignDeliveryPartner = async (
   hubuserId: string,
   subscriptionId: string,
-  assignedIds: string,
-  startDate: string,
+  deliveryOrderId: string,
   deliveryuserId: string
 ) => {
   try {
@@ -93,7 +92,7 @@ export const assignDeliveryPartner = async (
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/assign/assignSubscriptionHubToDeliveryPartner`,
-      { hubuserId, subscriptionId, assignedIds, startDate, deliveryuserId },
+      { hubuserId, subscriptionId, deliveryOrderId, deliveryuserId },
       {
         headers: {
           "Content-Type": "application/json",

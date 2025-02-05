@@ -83,7 +83,8 @@ export const getAllDeliveryUsersHubDropdown = async (hubuserId: string) => {
 export const assignDeliveryPartner = async (
   hubuserId: string,
   checkOutId: string,
-  assignedIds: string,
+  deliveryOrderId: string,
+  // assignedIds: string,
   deliveryuserId: string
 ) => {
   try {
@@ -93,7 +94,7 @@ export const assignDeliveryPartner = async (
 
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/assign/assignCheckoutHubToDeliveryPartner`,
-      { hubuserId, checkOutId, assignedIds, deliveryuserId },
+      { hubuserId, checkOutId, deliveryOrderId, deliveryuserId },
       {
         headers: {
           "Content-Type": "application/json",
