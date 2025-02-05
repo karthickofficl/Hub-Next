@@ -270,6 +270,7 @@ interface User {
   city: string;
   state: string;
   pincode: string;
+  userAutoID: string;
 }
 
 const UsersList = () => {
@@ -396,6 +397,7 @@ const UsersList = () => {
         <thead className="text-left font-semibold">
           <tr className="bg-green-950 text-white rounded-xl border font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
+            <th className="py-3 px-2">ID</th>
             <th className="py-3 px-2">Full Name</th>
             <th className="py-3 px-2">Email</th>
             <th className="py-3 px-2">Phone</th>
@@ -424,6 +426,9 @@ const UsersList = () => {
               >
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   {index + 1 + (page - 1) * limit}
+                </td>
+                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
+                  {user.userAutoID}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   {user.username}

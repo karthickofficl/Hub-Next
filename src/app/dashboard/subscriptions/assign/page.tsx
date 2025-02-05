@@ -269,7 +269,7 @@ const SubscriptionAssign = () => {
                 <Loader />
               </td>
             </tr>
-          ) : subscriptions.length === 0 ? (
+          ) : subscriptions?.length === 0 ? (
             <tr>
               <td colSpan={7} className="text-center p-4">
                 No Subscription found.
@@ -278,20 +278,20 @@ const SubscriptionAssign = () => {
           ) : (
             subscriptions.map((subscription, index) => (
               <tr
-                key={subscription.id}
+                key={subscription?.id}
                 className="hover:bg-green-100 cursor-pointer border-y font-[family-name:var(--interRegular)]"
               >
                 <td className="py-3 px-2">{index + 1 + (page - 1) * limit}</td>
                 <td className="py-3 px-2">
-                  {subscription.subscriptionOrderId}
+                  {subscription?.subscriptionOrderId}
                 </td>
                 <td className="py-3 px-2">
                   {subscription.product.productName}
                 </td>
-                <td className="py-3 px-2">{subscription.status}</td>
-                <td className="py-3 px-2">{subscription.totalPrice}</td>
+                <td className="py-3 px-2">{subscription?.status}</td>
+                <td className="py-3 px-2">{subscription?.totalPrice}</td>
                 <td className="py-3 px-2">
-                  {subscription.deliveryuserId == null
+                  {subscription?.deliveryuserId == null
                     ? "Unassigned"
                     : "Assigned"}
                 </td>
@@ -302,7 +302,7 @@ const SubscriptionAssign = () => {
                   >
                     Assign
                   </button> */}
-                  <button onClick={() => handleOpenPopup(subscription.id)}>
+                  <button onClick={() => handleOpenPopup(subscription?.id)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -360,9 +360,9 @@ const SubscriptionAssign = () => {
               className="block w-full p-2 border rounded-md mb-4 font-[family-name:var(--interRegular)]"
             >
               <option value="">Select Delivery User</option>
-              {deliveryPartner.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.username} - {user.address}
+              {deliveryPartner?.map((user) => (
+                <option key={user?.id} value={user?.id}>
+                  {user?.username} - {user?.address}
                 </option>
               ))}
             </select>
