@@ -46,7 +46,7 @@ const AssignPopupSubscription: React.FC<AssignPopupProps> = ({
         hubuserId,
         subscriptionId.toString(), // Ensure the ID is passed as a string
         assignedIds,
-        startDate,
+        // startDate,
         selectedUser.toString() // Ensure the ID is passed as a string
       );
 
