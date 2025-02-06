@@ -52,9 +52,9 @@ export const getSingleSalary = async (id: number) => {
 };
 
 export const postSalaryRequest = async (
-  attenanceFees: string,
-  salary: string,
-  petrolAllowance: string,
+  attenanceFees: number,
+  salary: number,
+  petrolAllowance: number,
   totalSalary: number,
   month: string,
   requestDate: string,

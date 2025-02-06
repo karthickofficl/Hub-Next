@@ -237,13 +237,13 @@ export default function Sidebar() {
         Admin Panel
       </div> */}
       <div className="text-center flex justify-center border-b">
-        <Image
+        {/* <Image
           src={logo}
           width={200}
           height={200}
           alt="logo"
           priority={false}
-        />
+        /> */}
       </div>
       {/* Menu Items */}
       <nav className="flex-1 p-4">

@@ -15,7 +15,7 @@ interface Salary {
   attenanceFees: string;
   salary: string;
   petrolAllowance: string;
-  totalSalary: string;
+  totalSalary: number;
   deliveryuserId: number;
   deliveryAutoID: string;
   month: string;
@@ -117,23 +117,37 @@ const PaymentRequest = () => {
   const [userData, setUserData] = useState({
     id: "",
     email: "",
-    name: "",
+    username: "",
     address: "",
   });
 
   const [attendanceFees, setAttendanceFees] = useState("");
   const [salaryInput, setSalaryInput] = useState("");
   const [petrolAllowance, setPetrolAllowance] = useState("");
-  const [totalCost, setTotalCost] = useState(0);
+  const [totalCost, setTotalCost] = useState("0.00");
   const [requestDate, setRequestDate] = useState("");
 
-  // const [isModalOpen, setIsModalOpen] = useState(true);
+  // Automatically recalculate when values change
 
-  // const closeModal = () => {
-  //   setIsModalOpen(false); // Close the modal
+  // const calculateTotalCost = () => {
+  //   const total =
+  //     (parseFloat(attendanceFees) || 0) +
+  //     (parseFloat(salaryInput) || 0) +
+  //     (parseFloat(petrolAllowance) || 0);
+  //     setTotalCost(total.toFixed(2)); // Proper decimal formatting
   // };
+  const calculateTotalCost = useCallback(() => {
+    const total =
+      (parseFloat(attendanceFees) || 0) +
+      (parseFloat(salaryInput) || 0) +
+      (parseFloat(petrolAllowance) || 0);
+    setTotalCost(total.toFixed(2)); // Proper decimal formatting
+  }, [attendanceFees, salaryInput, petrolAllowance]);
 
-  
+  useEffect(() => {
+    calculateTotalCost();
+  }, [attendanceFees, salaryInput, petrolAllowance, calculateTotalCost]);
+
   const fetchUserDetails = async () => {
     try {
       // Replace with actual hub user ID
@@ -146,7 +160,7 @@ const PaymentRequest = () => {
         setUserData({
           id: data.id,
           email: data.email || "",
-          name: data.name || "",
+          username: data.username || "",
           address: data.address || "",
         });
       }
@@ -155,44 +169,31 @@ const PaymentRequest = () => {
     }
   };
 
-  const calculateTotalCost = () => {
-    const total =
-      (Number(attendanceFees) || 0) +
-      (Number(salaryInput) || 0) +
-      (Number(petrolAllowance) || 0);
-    setTotalCost(total);
-  };
-
   const handleSubmit = async () => {
     const months = "Jan";
     try {
       // Call API and store response
       const responseData = await postSalaryRequest(
-        attendanceFees, // 1st argument (string)
-        salaryInput, // 2nd argument (string)
-        petrolAllowance, // 3rd argument (string)
-        totalCost, // 4th argument (string)
+        parseFloat(attendanceFees), // Convert string to number
+        parseFloat(salaryInput), // Convert string to number
+        parseFloat(petrolAllowance), // Convert string to number
+        parseFloat(totalCost), // Convert string to number
         months, // 5th argument (string)
         requestDate, // 6th argument (string)
         userData.id, // 7th argument (number)
         deliveryAutoIDInput, // 8th argument (string)
         hubuserId // 9th argument (number)
       );
-  
-      // Check if API call was successful (assuming responseData is valid when successful)
-      if (responseData) {
-        toast.success("Salary request created successfully", { position: "top-right" });
-        setIsPopupOpen(false); // Close popup
-      } else {
-        toast.error("Failed to create salary request. Please try again.", { position: "top-right" });
-      }
+      toast.success("Salary request created successfully", {
+        position: "top-right",
+      });
+      setIsPopupOpen(false); // Close popup
     } catch (error) {
       console.error("Error submitting request:", error);
       toast.error("Error creating salary request", { position: "top-right" });
     }
   };
-  
-  
+
   return (
     <>
       <div className="flex items-center my-3 gap-2 justify-end">
@@ -473,7 +474,7 @@ const PaymentRequest = () => {
             {/* Display fetched user data */}
             <div className="grid grid-cols-2 gap-2">
               <p className="my-2">Email: {userData.email}</p>
-              <p className="my-2">Name: {userData.name}</p>
+              <p className="my-2">Name: {userData.username}</p>
               <p className="my-2">Address: {userData.address}</p>
             </div>
 
@@ -483,10 +484,7 @@ const PaymentRequest = () => {
                 type="number"
                 placeholder="Attendance Fees"
                 value={attendanceFees}
-                onChange={(e) => {
-                  setAttendanceFees(e.target.value);
-                  calculateTotalCost();
-                }}
+                onChange={(e) => setAttendanceFees(e.target.value)}
                 className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
               />
             </div>
@@ -495,10 +493,7 @@ const PaymentRequest = () => {
                 type="number"
                 placeholder="Salary"
                 value={salaryInput}
-                onChange={(e) => {
-                  setSalaryInput(e.target.value);
-                  calculateTotalCost();
-                }}
+                onChange={(e) => setSalaryInput(e.target.value)}
                 className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
               />
             </div>
@@ -507,10 +502,7 @@ const PaymentRequest = () => {
                 type="number"
                 placeholder="Petrol Allowance"
                 value={petrolAllowance}
-                onChange={(e) => {
-                  setPetrolAllowance(e.target.value);
-                  calculateTotalCost();
-                }}
+                onChange={(e) => setPetrolAllowance(e.target.value)}
                 className="border-2 border-green-950 block w-full rounded-md px-3 py-1.5 text-gray-900"
               />
             </div>
