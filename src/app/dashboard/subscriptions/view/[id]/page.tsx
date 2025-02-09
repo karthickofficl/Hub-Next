@@ -371,7 +371,7 @@ const SubscriptionDetailsPage = () => {
                   >
                     <option value="YET TO DELIVER">YET TO DELIVER</option>
                     <option value="DELIVERED">DELIVERED</option>
-                    <option value="VECATION">VECATION</option>
+                    <option value="VACATION">VACATION</option>
                   </select>
                 </div>
                 <p>
