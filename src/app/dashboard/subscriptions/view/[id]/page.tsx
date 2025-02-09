@@ -129,6 +129,7 @@ const SubscriptionDetailsPage = () => {
 
       console.log("API Response:", data);
       toast.success("Delivery status updated successfully!");
+      fetchSubscription(Number(id));
     } catch (error) {
       console.error("Error updating delivery status:", error);
       toast.error("Unable to update delivery status. Please try again.");
@@ -369,8 +370,8 @@ const SubscriptionDetailsPage = () => {
                     className="font-[family-name:var(--interRegular)] border-2 border-green-900 bg-green-50 col-start-1 row-start-1 appearance-none rounded-md py-1 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                   >
                     <option value="YET TO DELIVER">YET TO DELIVER</option>
-                    <option value="COMPLETED">COMPLETED</option>
-                    <option value="PENDING">PENDING</option>
+                    <option value="DELIVERED">DELIVERED</option>
+                    <option value="VECATION">VECATION</option>
                   </select>
                 </div>
                 <p>
