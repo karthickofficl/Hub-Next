@@ -30,7 +30,7 @@
 
 //       // Call API and handle response
 //       const { message } = await loginUser(phone);
-   
+
 //       toast.success(message);
 
 //     } catch (error) {
@@ -134,7 +134,9 @@ const Login = () => {
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const inputRefs = useRef<(HTMLInputElement | null)[]>(new Array(6).fill(null)); // Store OTP input refs
+  const inputRefs = useRef<(HTMLInputElement | null)[]>(
+    new Array(6).fill(null)
+  ); // Store OTP input refs
 
   // Handle OTP timer countdown
   useEffect(() => {
@@ -206,7 +208,10 @@ const Login = () => {
       setValidation("");
 
       // Call API to validate OTP
-      const { token, existingUser, message } = await validateOTP(enteredOTP, userPhone);
+      const { token, existingUser, message } = await validateOTP(
+        enteredOTP,
+        userPhone
+      );
       dispatch(setAuth({ token, existingUser }));
 
       toast.success(message);
@@ -221,14 +226,23 @@ const Login = () => {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/assets/shutterstock_322888487-2-ql73b798b4ngnw8w8b3ygew6351qvtpdzdwjcka3qc.jpg')" }}>
-      
+    <main
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage:
+          "url('/assets/shutterstock_322888487-2-ql73b798b4ngnw8w8b3ygew6351qvtpdzdwjcka3qc.jpg')",
+      }}
+    >
       <div className="bg-white/80 p-8 rounded-lg shadow-lg w-3/12">
         <h1 className="text-2xl font-bold mb-4">Login</h1>
 
         {/* Phone Input */}
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-900">Phone Number</label>
+        <label
+          htmlFor="phone"
+          className="block text-sm font-medium text-gray-900"
+        >
+          Phone Number
+        </label>
         <input
           id="phone"
           type="number"
@@ -239,8 +253,10 @@ const Login = () => {
         />
 
         {/* Login Button */}
-        <button onClick={handleOTPSend}
-          className="mt-6 w-full bg-green-950 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">
+        <button
+          onClick={handleOTPSend}
+          className="mt-6 w-full bg-green-950 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
+        >
           Login
         </button>
 
@@ -252,32 +268,33 @@ const Login = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
             <h2 className="text-lg font-semibold mb-4">Enter OTP</h2>
-            
+
             {/* OTP Input Fields */}
             <div className="flex justify-center gap-2 mb-4">
-  {otp.map((digit, index) => (
-    <input
-      key={index}
-      id={`otp-${index}`}
-      ref={(el) => {
-        inputRefs.current[index] = el; // Store ref properly
-      }}
-      type="text"
-      maxLength={1 as number}
-      value={digit}
-      onChange={(e) => handleOTPChange(index, e.target.value)}
-      className="w-10 h-10 text-center text-xl border border-gray-300 rounded"
-    />
-  ))}
-</div>
-
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  id={`otp-${index}`}
+                  ref={(el) => {
+                    inputRefs.current[index] = el; // Store ref properly
+                  }}
+                  type="text"
+                  maxLength={1 as number}
+                  value={digit}
+                  onChange={(e) => handleOTPChange(index, e.target.value)}
+                  className="w-10 h-10 text-center text-xl border border-gray-300 rounded"
+                />
+              ))}
+            </div>
 
             {/* Timer */}
             <p className="text-sm text-gray-600">Resend OTP in {timer}s</p>
 
             {/* Submit Button */}
-            <button onClick={handleLogin}
-              className="mt-4 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded">
+            <button
+              onClick={handleLogin}
+              className="mt-4 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded"
+            >
               Submit
             </button>
           </div>
