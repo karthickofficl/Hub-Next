@@ -466,7 +466,7 @@ const PaymentRequest = () => {
             <button
               type="button"
               onClick={fetchUserDetails}
-              className="bg-blue-600 text-white rounded px-4 py-2 mb-4"
+              className="bg-green-950 text-white rounded px-4 py-2 mb-4"
             >
               Submit
             </button>
