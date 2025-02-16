@@ -1,63 +1,74 @@
-
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { getUsers, getSingleUsers } from "@/lib/api/userApi";
+import {
+  getAllReports,
+  getSingleReport,
+  getProductNames,
+  postReport,
+} from "@/lib/api/reportApi";
 import { Loader } from "@/components/Loader";
+import { toast } from "react-toastify";
 
-interface User {
+interface Report {
   id: number;
-  username: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-  userAutoID: string;
+  quantity: number;
+  reportDate: string;
+  status: string;
+  productId: number;
+  hubuserId: number;
+  product: Product | null;
+}
+interface Product {
+  id: number;
+  productName: string;
+  price: string;
 }
 
 const ReportsList = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const [productName, setProductName] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null); // For offcanvas
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null); // For offcanvas
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState<boolean>(false);
+  const [isAddOffcanvasOpen, setIsAddOffcanvasOpen] = useState<boolean>(false);
+
+  const [productNameList, setProductNameList] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
+  const [totalQuantity, setTotalQuantity] = useState<number>(0);
 
   const hubuserIdSplit = useSelector(
     (state: RootState) => state.auth.existingUser
   );
   const hubuserId = hubuserIdSplit?.id;
 
-  const fetchUsers = useCallback(async () => {
+  const fetchReport = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getUsers(
+      const data = await getAllReports(
         hubuserId,
-        username,
-        email,
+        productName,
         page.toString(),
         limit.toString()
       );
-      setUsers(data?.users || []);
+      setReports(data?.report || []);
       setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, username, email, page, limit]);
+  }, [hubuserId, productName, page, limit]);
 
-  const fetchSingleUser = async (userId: number) => {
+  const fetchSingleReport = async (reportId: number) => {
     try {
       setLoading(true);
-      const user = await getSingleUsers(userId);
-      setSelectedUser(user);
+      const report = await getSingleReport(reportId);
+      setSelectedReport(report);
       setIsOffcanvasOpen(true); // Open the offcanvas
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -66,9 +77,22 @@ const ReportsList = () => {
     }
   };
 
+  // Fetch delivery partners
+  const fetchProduct = useCallback(async () => {
+    try {
+      const data = await getProductNames();
+      console.log("product name", data);
+
+      setProductNameList(data?.product || []);
+    } catch (error) {
+      console.error("Error fetching delivery users:", error);
+    }
+  }, []);
+
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchReport();
+    fetchProduct();
+  }, [fetchReport, fetchProduct]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -77,33 +101,62 @@ const ReportsList = () => {
   };
 
   const handleRefresh = () => {
-    setUsername("");
-    setEmail("");
+    setProductName("");
     setPage(1);
-    fetchUsers();
+    fetchReport();
+  };
+
+  const handleAdd = () => {
+    fetchProduct();
+    setIsAddOffcanvasOpen(true);
   };
 
   const handleCloseOffcanvas = () => {
     setIsOffcanvasOpen(false);
-    setSelectedUser(null);
+    setSelectedReport(null);
+
+    setIsAddOffcanvasOpen(false);
+    setSelectedProduct(null);
+    setTotalQuantity(0);
+  };
+
+  const handleReportCreate = async () => {
+    if (!selectedProduct || totalQuantity <= 0) {
+      toast.error("Please select a product and enter a valid quantity");
+      return;
+    }
+
+    try {
+      await postReport({
+        hubuserId,
+        quantity: totalQuantity, // ✅ Ensure the key matches the API expectation
+        status: "submitted",
+        productId: selectedProduct,
+      });
+      toast.success("Data created successfully");
+      setIsAddOffcanvasOpen(false);
+      fetchReport();
+    } catch (error) {
+      toast.error("Error creating report");
+    }
   };
 
   return (
     <>
       <div className="flex items-center my-3 gap-2 justify-between">
-        <h5 className="font-[family-name:var(--interSemiBold)]">Users</h5>
+        <h5 className="font-[family-name:var(--interSemiBold)]">Reports</h5>
         <div className="items-center grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 lg:grid-cols-8">
           <div className="sm:col-span-3">
             <input
               type="search"
-              placeholder="Full name"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Product name"
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
               className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
           </div>
 
-          <div className="sm:col-span-3">
+          {/* <div className="sm:col-span-3">
             <input
               type="email"
               placeholder="Email"
@@ -111,7 +164,7 @@ const ReportsList = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
-          </div>
+          </div> */}
           <div className="sm:col-span-2">
             <button
               type="button"
@@ -135,6 +188,29 @@ const ReportsList = () => {
               Refresh
             </button>
           </div>
+          <div className="sm:col-span-2">
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="font-[family-name:var(--interRegular)] bg-amber-900 text-white rounded flex items-center px-2 py-1"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
+              Add
+            </button>
+          </div>
         </div>
       </div>
 
@@ -142,11 +218,9 @@ const ReportsList = () => {
         <thead className="text-left font-semibold">
           <tr className="bg-green-950 text-white rounded-xl border font-[family-name:var(--interSemiBold)]">
             <th className="py-3 px-2">S.No</th>
-            <th className="py-3 px-2">ID</th>
-            <th className="py-3 px-2">Full Name</th>
-            <th className="py-3 px-2">Email</th>
-            <th className="py-3 px-2">Phone</th>
-            <th className="py-3 px-2">Address</th>
+            <th className="py-3 px-2">Product Name</th>
+            <th className="py-3 px-2">Quantity</th>
+            <th className="py-3 px-2">Report Date</th>
             <th className="py-3 px-2">Action</th>
           </tr>
         </thead>
@@ -157,39 +231,33 @@ const ReportsList = () => {
                 <Loader />
               </td>
             </tr>
-          ) : users.length === 0 ? (
+          ) : reports.length === 0 ? (
             <tr>
               <td colSpan={6} className="text-center p-4">
-                No users found.
+                No reports found.
               </td>
             </tr>
           ) : (
-            users.map((user, index) => (
+            reports.map((report, index) => (
               <tr
-                key={user.id}
+                key={report.id}
                 className="hover:bg-green-100 cursor-pointer border-y"
               >
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   {index + 1 + (page - 1) * limit}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  {user.userAutoID}
+                  {report?.product?.productName}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  {user.username}
+                  {report.quantity}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  {user.email}
-                </td>
-                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  {user.phone}
-                </td>
-                <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  {user.address}
+                  {report.reportDate}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   <svg
-                    onClick={() => fetchSingleUser(user.id)}
+                    onClick={() => fetchSingleReport(report.id)}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -264,12 +332,12 @@ const ReportsList = () => {
       </div>
 
       {/* Offcanvas for User Details */}
-      {isOffcanvasOpen && selectedUser && (
+      {isOffcanvasOpen && selectedReport && (
         <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg z-50 overflow-auto">
           <div className="p-4">
-            <div className="flex items-center justify-between bg-green-950 px-3 py-2">
+            <div className="flex rounded-sm items-center justify-between bg-green-950 px-3 py-2">
               <h3 className="text-white font-bold text-lg  font-[family-name:var(--interSemiBold)]">
-                User Details
+                Report Details
               </h3>
               <button
                 onClick={handleCloseOffcanvas}
@@ -280,28 +348,71 @@ const ReportsList = () => {
             </div>
             <div className="mt-3">
               <p className="font-[family-name:var(--interRegular)]">
-                <strong>Full Name:</strong> {selectedUser.username}
+                <strong>Product Name:</strong>{" "}
+                {selectedReport?.product?.productName}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Email:</strong> {selectedUser.email}
+                <strong>Quantity:</strong> {selectedReport.quantity}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Phone:</strong> {selectedUser.phone}
+                <strong>Report Date:</strong> {selectedReport.reportDate}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Address:</strong> {selectedUser.address}
-              </p>
-
-              <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>City:</strong> {selectedUser.city}
-              </p>
-              <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>State:</strong> {selectedUser.state}
-              </p>
-              <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Pincode:</strong> {selectedUser.pincode}
+                <strong>Price:</strong> {selectedReport?.product?.price}
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Data */}
+      {isAddOffcanvasOpen && (
+        <div className="fixed top-0 right-0 w-1/3 h-full bg-white shadow-lg z-50 overflow-auto">
+          <div className="p-4">
+            <div className="flex rounded-sm items-center justify-between bg-green-950 px-3 py-2">
+              <h3 className="text-white font-bold text-lg">Report Add</h3>
+              <button
+                onClick={handleCloseOffcanvas}
+                className="text-red-600 text-lg"
+              >
+                Close
+              </button>
+            </div>
+
+            {/* Product Dropdown */}
+            <div className="mt-3">
+              <select
+                value={selectedProduct || ""}
+                onChange={(e) => setSelectedProduct(Number(e.target.value))}
+                className="block w-full p-2 border rounded-md mb-4"
+              >
+                <option value="">Select Product</option>
+                {productNameList.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.productName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Quantity Input */}
+            <div className="sm:col-span-3">
+              <input
+                type="number"
+                placeholder="Quantity"
+                value={totalQuantity}
+                onChange={(e) => setTotalQuantity(Number(e.target.value))} // ✅ Convert string to number
+                className="border-green-950 border-2 block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
+              />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              onClick={handleReportCreate}
+              className="bg-green-950 text-white rounded px-4 py-2 mt-4"
+            >
+              Create Report
+            </button>
           </div>
         </div>
       )}
