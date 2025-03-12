@@ -8,6 +8,7 @@ import {
 } from "@/lib/api/subscriptionApi";
 import { Loader } from "@/components/Loader";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 interface User {
   id: number;
@@ -37,6 +38,19 @@ interface DeliveryStatus {
   subscriptionIsValid: boolean;
 }
 
+interface DeliveryUser {
+  id: number;
+  username: string;
+  email: string;
+  phone: string;
+  emergencyPhone: string;
+  address: string;
+  branchName: string;
+  accountHolderName: string;
+  accountNo: string;
+  IFSCNO: string;
+}
+
 interface SubscriptionHistory {
   id: number;
   subscriptionOrderId: string;
@@ -50,6 +64,7 @@ interface SubscriptionHistory {
   product: Product;
   user: User;
   deliverystatuses: DeliveryStatus[];
+  deliveryuser:DeliveryUser;
 }
 
 const SubscriptionDetailsPage = () => {
@@ -96,7 +111,7 @@ const SubscriptionDetailsPage = () => {
     return <p>Subscription details not found.</p>;
   }
 
-  const { user, product, deliverystatuses } = subscription;
+  const { user, product, deliverystatuses, deliveryuser } = subscription;
 
   const handleStatusChange = async (
     statusId: number,
@@ -296,13 +311,90 @@ const SubscriptionDetailsPage = () => {
           </p>
         </div>
         <div className="mt-4">
-          <img
+          <Image
             src={product.productImages}
             alt={product.productName}
-            className="w-full max-w-sm rounded shadow"
-          />
+            // className="w-full max-w-sm rounded shadow"
+            className="rounded shadow"
+            width={100}
+            height={100}
+          ></Image>
         </div>
       </div>
+
+      {/* Delivery Partner Details */}
+      <div className="bg-white rounded-lg p-5 shadow mb-5">
+        <h3 className="font-bold text-lg text-green-700 font-[family-name:var(--interSemiBold)] mb-3">
+          Delivery Partner Details
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Delivery Partner Name:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.username}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Delivery Partner Email:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.email}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Mobile No:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.phone}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+             Emergency Mobile No:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.emergencyPhone}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Address:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.address}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Branch Name:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.branchName}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+            Account Holder Name:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.accountHolderName}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+            Account No:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser.accountNo}
+            </span>
+          </p>
+        </div>
+      </div>
+
 
       {/* Delivery Status */}
       {/* <div className="bg-white rounded-lg p-5 shadow">

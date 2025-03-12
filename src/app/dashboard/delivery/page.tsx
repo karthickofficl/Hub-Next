@@ -303,6 +303,9 @@ const DeliveryUsersList = () => {
                 <strong>Account Name:</strong> {selectedUser.accountHolderName}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
+                <strong>Account No:</strong> {selectedUser.accountNo}
+              </p>
+              <p className="font-[family-name:var(--interRegular)] mt-2">
                 <strong>IFSCNO:</strong> {selectedUser.IFSCNO}
               </p>
             </div>
