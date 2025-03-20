@@ -43,7 +43,6 @@ interface Product {
   };
 }
 
-
 const OrderDetailsPage = () => {
   const { id } = useParams(); // Extract the `id` parameter from the URL
   const [checkout, setCheckout] = useState<Checkout | null>(null);
@@ -235,11 +234,18 @@ const OrderDetailsPage = () => {
               </p>
             </div>
             <div className="mt-4">
-              <img
+              <Image
+                src={product?.productImages}
+                alt={product?.productName}
+                className="rounded shadow"
+                width={100}
+                height={100}
+              ></Image>
+              {/* <img
                 src={product?.productImages}
                 alt={product?.productName}
                 className="w-40 h-40 max-w-sm rounded shadow"
-              />
+              /> */}
             </div>
           </div>
         ))}
