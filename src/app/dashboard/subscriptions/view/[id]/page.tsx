@@ -168,7 +168,7 @@ const SubscriptionDetailsPage = () => {
               Subscription Order ID:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {subscription.subscriptionOrderId}
+              {subscription?.subscriptionOrderId}
             </span>
           </p>
           <p>
@@ -176,7 +176,7 @@ const SubscriptionDetailsPage = () => {
               Start Date:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {subscription.startDate}
+              {subscription?.startDate}
             </span>
           </p>
           <p>
@@ -184,7 +184,7 @@ const SubscriptionDetailsPage = () => {
               End Date:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {subscription.endDate}
+              {subscription?.endDate}
             </span>
           </p>
           <p>
@@ -192,7 +192,7 @@ const SubscriptionDetailsPage = () => {
               Total Amount:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              ₹{subscription.totalPrice}
+              ₹{subscription?.totalPrice}
             </span>
           </p>
           <p>
@@ -200,7 +200,7 @@ const SubscriptionDetailsPage = () => {
               Preference:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {subscription.preference}
+              {subscription?.preference}
             </span>
           </p>
           <p>
@@ -208,7 +208,7 @@ const SubscriptionDetailsPage = () => {
               Status:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {subscription.status}
+              {subscription?.status}
             </span>
           </p>
           <p>
@@ -216,7 +216,7 @@ const SubscriptionDetailsPage = () => {
               Total Days:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {subscription.totalDate}
+              {subscription?.totalDate}
             </span>
           </p>
           <p>
@@ -224,7 +224,7 @@ const SubscriptionDetailsPage = () => {
               Quantity:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {subscription.quantity}
+              {subscription?.quantity}
             </span>
           </p>
         </div>
@@ -241,7 +241,7 @@ const SubscriptionDetailsPage = () => {
               Customer Name:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {user.username}
+              {user?.username}
             </span>
           </p>
           <p>
@@ -257,7 +257,7 @@ const SubscriptionDetailsPage = () => {
               Address:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {user.address}, {user.city}, {user.state}, {user.pincode}
+              {user?.address}, {user?.city}, {user?.state}, {user?.pincode}
             </span>
           </p>
           <p>
@@ -265,7 +265,7 @@ const SubscriptionDetailsPage = () => {
               Email:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {user.email}
+              {user?.email}
             </span>
           </p>
         </div>
@@ -333,7 +333,7 @@ const SubscriptionDetailsPage = () => {
               Delivery Partner Name:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.username}
+              {deliveryuser?.username}
             </span>
           </p>
           <p>
@@ -341,7 +341,7 @@ const SubscriptionDetailsPage = () => {
               Delivery Partner Email:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.email}
+              {deliveryuser?.email}
             </span>
           </p>
           <p>
@@ -349,7 +349,7 @@ const SubscriptionDetailsPage = () => {
               Mobile No:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.phone}
+              {deliveryuser?.phone}
             </span>
           </p>
           <p>
@@ -357,7 +357,7 @@ const SubscriptionDetailsPage = () => {
              Emergency Mobile No:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.emergencyPhone}
+              {deliveryuser?.emergencyPhone}
             </span>
           </p>
           <p>
@@ -365,7 +365,7 @@ const SubscriptionDetailsPage = () => {
               Address:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.address}
+              {deliveryuser?.address}
             </span>
           </p>
           <p>
@@ -373,7 +373,7 @@ const SubscriptionDetailsPage = () => {
               Branch Name:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.branchName}
+              {deliveryuser?.branchName}
             </span>
           </p>
           <p>
@@ -381,7 +381,7 @@ const SubscriptionDetailsPage = () => {
             Account Holder Name:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.accountHolderName}
+              {deliveryuser?.accountHolderName}
             </span>
           </p>
           <p>
@@ -389,7 +389,7 @@ const SubscriptionDetailsPage = () => {
             Account No:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {deliveryuser.accountNo}
+              {deliveryuser?.accountNo}
             </span>
           </p>
         </div>
@@ -434,21 +434,21 @@ const SubscriptionDetailsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {deliverystatuses.map((status) => (
               <div
-                key={status.id}
+                key={status?.id}
                 className="border rounded p-3 shadow-sm bg-gray-50"
               >
                 <p>
                   <strong className="font-[family-name:var(--interSemiBold)]">
                     Delivery Date:
                   </strong>{" "}
-                  {status.deliveryDate}
+                  {status?.deliveryDate}
                 </p>
                 <div className="flex gap-2 align-middle items-center mt-2">
                   <strong className="font-[family-name:var(--interSemiBold)] mb-0">
                     Status:
                   </strong>{" "}
                   <select
-                    value={status.deliveryStatus}
+                    value={status?.deliveryStatus}
                     onChange={(e) =>
                       handleStatusChange(
                         status.id,
@@ -471,7 +471,7 @@ const SubscriptionDetailsPage = () => {
                     Notes:
                   </strong>{" "}
                   <span className="font-[family-name:var(--interRegular)]">
-                    {status.notes}
+                    {status?.notes}
                   </span>
                 </p>
                 {/* <p>
