@@ -161,7 +161,7 @@ const OrderDetailsPage = () => {
               Customer Name:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {user.username}
+              {user?.username}
             </span>
           </p>
           <p>
@@ -169,7 +169,7 @@ const OrderDetailsPage = () => {
               Mobile No:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {user.phone}
+              {user?.phone}
             </span>
           </p>
           <p>
@@ -177,7 +177,7 @@ const OrderDetailsPage = () => {
               Address:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {user.address}, {user.city}, {user.state},{" "}
+              {user?.address}, {user?.city}, {user?.state},{" "}
             </span>
             {user.pincode}
           </p>
@@ -186,7 +186,7 @@ const OrderDetailsPage = () => {
               Email:
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
-              {user.email}
+              {user?.email}
             </span>
           </p>
         </div>
@@ -199,14 +199,14 @@ const OrderDetailsPage = () => {
           Product Details
         </h3>
         {checkout.products?.map((product) => (
-          <div key={product.id} className="mb-6 border-b pb-4 last:border-b-0">
+          <div key={product?.id} className="mb-6 border-b pb-4 last:border-b-0">
             <div className="grid grid-cols-2 gap-4">
               <p>
                 <strong className="font-[family-name:var(--interSemiBold)]">
                   Product Name:
                 </strong>{" "}
                 <span className="font-[family-name:var(--interRegular)]">
-                  {product.productName}
+                  {product?.productName}
                 </span>
               </p>
               <p>
@@ -214,7 +214,7 @@ const OrderDetailsPage = () => {
                   Price:
                 </strong>{" "}
                 <span className="font-[family-name:var(--interRegular)]">
-                  ₹{product.price}
+                  ₹{product?.price}
                 </span>
               </p>
               <p>
@@ -222,7 +222,7 @@ const OrderDetailsPage = () => {
                   Quantity:
                 </strong>{" "}
                 <span className="font-[family-name:var(--interRegular)]">
-                  {product.checkoutproduct.qquantity}
+                  {product?.checkoutproduct.qquantity}
                 </span>
               </p>
               <p>
@@ -236,8 +236,8 @@ const OrderDetailsPage = () => {
             </div>
             <div className="mt-4">
               <img
-                src={product.productImages}
-                alt={product.productName}
+                src={product?.productImages}
+                alt={product?.productName}
                 className="w-40 h-40 max-w-sm rounded shadow"
               />
             </div>
