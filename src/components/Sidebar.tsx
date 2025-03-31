@@ -180,8 +180,8 @@ export default function Sidebar() {
       subMenu: null,
     },
     {
-      name: "Tomorrow Order",
-      path: "/dashboard/tomorrow-order",
+      name: "Today Order",
+      path: "/dashboard/today-order",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"

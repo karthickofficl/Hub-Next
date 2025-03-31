@@ -198,7 +198,8 @@ const TomorrowOrder = () => {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const deliveryDay = tomorrow.toISOString().split("T")[0];
+  // const deliveryDay = tomorrow.toISOString().split("T")[0];
+  const deliveryDay = today.toISOString().split("T")[0];
 
   console.log("tomorrow's date:", deliveryDay);
 
