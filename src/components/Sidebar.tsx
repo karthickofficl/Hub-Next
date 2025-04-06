@@ -281,14 +281,14 @@ export default function Sidebar() {
       <div className="text-center flex justify-center border-b">
         <Image
           src={logo}
-          width={200}
-          height={200}
+          width={150}
+          height={150}
           alt="logo"
           priority={false}
         />
       </div>
       {/* Menu Items */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         {menuItems.map((item) => (
           <div
             key={item.name}

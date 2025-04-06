@@ -18,6 +18,20 @@ interface User {
   pincode: string;
 }
 
+interface DeliveryUser {
+  id: number;
+  username: string;
+  email: string;
+  phone: string;
+  emergencyPhone: string;
+  address: string;
+  branchName: string;
+  accountHolderName: string;
+  accountNo: string;
+  IFSCNO: string;
+  deliveryAutoID: string;
+}
+
 interface Checkout {
   id: number;
   paymentId: string;
@@ -28,6 +42,7 @@ interface Checkout {
   preference: string;
   orderId: string;
   user: User;
+  deliveryuser: DeliveryUser;
   products: Product[]; // <-- Update this from 'product' to 'products'
 }
 
@@ -84,7 +99,7 @@ const OrderDetailsPage = () => {
     return <p>Checkout details not found.</p>;
   }
 
-  const { user } = checkout;
+  const { user, deliveryuser } = checkout;
 
   return (
     <div className="p-4">
@@ -149,10 +164,10 @@ const OrderDetailsPage = () => {
         </div>
       </div>
 
-      {/* Delivery Details */}
+      {/* Customer Details */}
       <div className="bg-white rounded-lg p-5 shadow mb-5">
         <h3 className="font-bold text-lg text-green-700 mb-3">
-          Delivery Details
+          Customer Details
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <p>
@@ -186,6 +201,95 @@ const OrderDetailsPage = () => {
             </strong>{" "}
             <span className="font-[family-name:var(--interRegular)]">
               {user?.email}
+            </span>
+          </p>
+        </div>
+      </div>
+
+      {/* Delivery Partner Details */}
+      <div className="bg-white rounded-lg p-5 shadow mb-5">
+        <h3 className="font-bold text-lg text-green-700 mb-3">
+          Delivery Partner Details
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Delivery Partner Name:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.username}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Delivery Partner ID:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.deliveryAutoID}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Mobile No:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.phone}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Address:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.address}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Emergency Phone Number:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.emergencyPhone}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Email:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.email}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Branch Name:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.branchName}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Account Holder Name:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.accountHolderName}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              Account No:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.accountNo}
+            </span>
+          </p>
+          <p>
+            <strong className="font-[family-name:var(--interSemiBold)]">
+              IFSCNO:
+            </strong>{" "}
+            <span className="font-[family-name:var(--interRegular)]">
+              {deliveryuser?.IFSCNO}
             </span>
           </p>
         </div>
