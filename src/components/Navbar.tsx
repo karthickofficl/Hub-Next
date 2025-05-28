@@ -1,7 +1,6 @@
 "use client"; // Mark this file as a Client Component
 // import { useSelector } from "react-redux";
 // import { RootState } from "@/redux/store";
-
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { logout } from "@/redux/slices/authSlice";
