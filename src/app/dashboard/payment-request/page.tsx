@@ -18,7 +18,7 @@ interface Salary {
   totalSalary: number;
   deliveryuserId: number;
   deliveryAutoID: string;
-  month: string;
+  monthName: string;
   isCompleted: boolean;
   year: string;
 }
@@ -38,7 +38,7 @@ const PaymentRequest = () => {
   const [salary, setSalary] = useState<Salary[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [deliveryAutoID, setDeliveryAutoID] = useState<string>("");
-  const [month, setMonth] = useState<string>("");
+  const [monthName, setMonthName] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -58,7 +58,7 @@ const PaymentRequest = () => {
       const data = await getAllSalaryRequest(
         hubuserId,
         deliveryAutoID,
-        month,
+        monthName,
         page.toString(),
         limit.toString()
       );
@@ -69,7 +69,7 @@ const PaymentRequest = () => {
     } finally {
       setLoading(false);
     }
-  }, [hubuserId, deliveryAutoID, month, page, limit]);
+  }, [hubuserId, deliveryAutoID, monthName, page, limit]);
 
   const fetchSingleSalary = async (id: number) => {
     try {
@@ -96,7 +96,7 @@ const PaymentRequest = () => {
 
   const handleRefresh = () => {
     setDeliveryAutoID("");
-    setMonth("");
+    setMonthName("");
     setPage(1);
     fetchRequests();
   };
@@ -170,7 +170,7 @@ const PaymentRequest = () => {
   };
 
   const handleSubmit = async () => {
-    const months = "Jan";
+    const months = "";
     try {
       // Call API and store response
       const responseData = await postSalaryRequest(
@@ -217,8 +217,8 @@ const PaymentRequest = () => {
             <input
               type="email"
               placeholder="Name"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
+              value={monthName}
+              onChange={(e) => setMonthName(e.target.value)}
               className="border-green-950 border-2 font-[family-name:var(--interRegular)] block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400"
             />
           </div>
@@ -248,25 +248,25 @@ const PaymentRequest = () => {
           <div className="w-full">
             <button
               type="button"
-              onClick={() => handleOpenPopup()}
               //   onClick={handleRefresh}
               className="font-[family-name:var(--interRegular)] bg-amber-900 text-white rounded flex items-center px-2 py-1"
             >
               <svg
+                onClick={() => handleOpenPopup()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="size-6"
+                className="size-6 pr-2"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
                 />
               </svg>
-              Add Payment
+              Add Payment Request
             </button>
           </div>
         </div>
@@ -320,7 +320,7 @@ const PaymentRequest = () => {
                   {requestsalary.petrolAllowance}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
-                  {requestsalary.month}
+                  {requestsalary.monthName}
                 </td>
                 <td className="font-[family-name:var(--interRegular)] py-3 px-2">
                   {requestsalary.year}
@@ -436,7 +436,7 @@ const PaymentRequest = () => {
                 <strong>Total:</strong> {selectedUser.totalSalary}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
-                <strong>Month:</strong> {selectedUser.month}
+                <strong>Month:</strong> {selectedUser.monthName}
               </p>
               <p className="font-[family-name:var(--interRegular)] mt-2">
                 <strong>Year:</strong> {selectedUser.year}
@@ -445,7 +445,7 @@ const PaymentRequest = () => {
           </div>
         </div>
       )}
-      {/* Popup */}
+      ;{/* Popup */}
       {isPopupOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-xl">
